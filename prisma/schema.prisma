@@ -1,82 +1,167 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
+  id            String   @id @default(uuid())
+  name          String?
+  email         String?  @unique
+  emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  role          String?
-  banned        Boolean?  @default(false)
-  banReason     String?
-  banExpires    DateTime?
-  sessions      Session[]
-  accounts      Account[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role       String?
+  banned     Boolean? @default(false)
+  banReason  String?
+  banExpires DateTime?
 
-  @@unique([email])
-  @@map("user")
-}
+  addressId Int? 
+  address   Address? @relation(fields: [addressId], references: [id])
 
-model Session {
-  id             String   @id
-  expiresAt      DateTime
-  token          String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  ipAddress      String?
-  userAgent      String?
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  impersonatedBy String?
-
-  @@unique([token])
-  @@index([userId])
-  @@map("session")
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@index([userId])
-  @@map("account")
+  sessions  Session[]
+  accounts  Account[]
+  orders    Order[]      // 1:n
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(uuid())
   identifier String
   value      String
-  expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  expiresAt  DateTime?
+}
 
-  @@index([identifier])
-  @@map("verification")
+model Session {
+  id           String   @id @default(uuid())
+  expiresAt    DateTime
+  token        String   @unique
+  ipAddress    String?
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userAgent    String?
+  impersonatedBy String?
+}
+
+model Account {
+  id                    String   @id @default(uuid())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  refreshTokenExpiresAt DateTime?
+  accessTokenExpiresAt  DateTime?
+  gaccountId            String?
+  providerId            String?
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  scope                 String?
+  password              String?
+  role                  String?
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Address {
+  id         Int     @id @default(autoincrement())
+  street     String
+  postalCode String
+  city       String
+  country    String
+
+  // relation backrefs
+
+  users  User[]
+  orders Order[]
+}
+
+model Order {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  status       String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  shippingAddressId Int?
+  shippingAddress   Address? @relation(fields: [shippingAddressId], references: [id])
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id            Int     @id @default(autoincrement())
+  orderId       Int
+  order         Order   @relation(fields: [orderId], references: [id])
+  movieId       Int
+  movie         Movie   @relation(fields: [movieId], references: [id])
+  quantity      Int     @default(1)
+  priceAtPurchase Float
+}
+
+model Movie {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  price       Float?
+  releaseDate DateTime?
+  imageUrl    String?
+  runtime     Int?
+  deleted     Boolean   @default(false)
+
+  // (explicit many-to-many via join tables:)
+
+  moviePersons MovieToPerson[]
+  genres       MovieToGenre[]
+
+  orderItems   OrderItem[]
+}
+
+model MoviePerson {
+  id    Int    @id @default(autoincrement())
+  name  String
+  role  String? // if  global attribute;  keep value null
+
+  movies MovieToPerson[]
+}
+
+model Genre {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String?
+
+  movies MovieToGenre[]
+}
+
+/* (Join tables for explicit many-to-many relations - easier to extend later) */
+
+model MovieToPerson {
+  movieId  Int
+  personId Int
+   // (optional extra fields for the relationship could be added here, e.g. characterName, creditOrder)
+  characterName String?
+  creditOrder   Int?
+
+  movie  Movie       @relation(fields: [movieId], references: [id])
+  person MoviePerson @relation(fields: [personId], references: [id])
+
+  @@id([movieId, personId])
+  @@index([personId])
+}
+
+model MovieToGenre {
+  movieId Int
+  genreId Int
+
+  movie Movie @relation(fields: [movieId], references: [id])
+  genre Genre @relation(fields: [genreId], references: [id])
+
+  @@id([movieId, genreId])
+  @@index([genreId])
 }
