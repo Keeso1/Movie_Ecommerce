@@ -5,13 +5,20 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client" // or `prisma-client-js`
+  output          = "../generated/prisma"
+  engineType      = "client" // enable Prisma ORM without Rust
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+//
+// ─────────────────────────────────────────
+//   AUTH BASE TABLES (BetterAuth)
+// ─────────────────────────────────────────
+//
 
 model User {
   id            String    @id
@@ -28,6 +35,11 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  addressId String?  @unique
+  address   Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)
+
+  orders Order[]
+
   @@unique([email])
   @@map("user")
 }
@@ -40,7 +52,7 @@ model Session {
   updatedAt      DateTime @updatedAt
   ipAddress      String?
   userAgent      String?
-  userId         String
+  userId         String   @unique
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   impersonatedBy String?
 
@@ -53,7 +65,7 @@ model Account {
   id                    String    @id
   accountId             String
   providerId            String
-  userId                String
+  userId                String    @unique
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
@@ -79,4 +91,97 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+//
+// ─────────────────────────────────────────
+//   ADDRESS
+// ─────────────────────────────────────────
+//
+
+model Address {
+  id         String @id
+  street     String
+  postalCode String
+  city       String
+  country    String
+
+  user   User?
+  orders Order[]
+  @@map("address")
+}
+
+//
+// ─────────────────────────────────────────
+//   MOVIE DOMAIN
+// ─────────────────────────────────────────
+//
+
+model Movie {
+  id          String   @id
+  title       String
+  description String
+  price       Decimal
+  releaseDate DateTime
+  imageUrl    String
+  runtime     Int?
+  deleted     Boolean? @default(false)
+
+  // Relations
+  orderItems OrderItem[]
+
+  // IMPLICIT MANY-TO-MANY
+  genres       Genre[] // Prisma generates _MovieToGenre
+  moviePersons MoviePerson[] // Prisma generates _MovieToMoviePerson
+  @@map("movie")
+}
+
+model Genre {
+  id          String  @id
+  name        String
+  description String?
+
+  movies Movie[] // implicit m:n
+  @@map("genre")
+}
+
+model MoviePerson {
+  id   String @id
+  name String
+  role String
+
+  movies Movie[] // implicit m:n
+  @@map("moviePerson")
+}
+
+//
+// ─────────────────────────────────────────
+//   ORDER + ORDER ITEMS
+// ─────────────────────────────────────────
+//
+
+model Order {
+  id                String   @id
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  status            String
+  userId            String
+  shippingAddressId String
+
+  user            User        @relation(fields: [userId], references: [id])
+  shippingAddress Address     @relation(fields: [shippingAddressId], references: [id])
+  items           OrderItem[]
+  @@map("order")
+}
+
+model OrderItem {
+  id              String  @id
+  orderId         String
+  movieId         String
+  quantity        Int
+  priceAtPurchase Decimal
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id])
+  @@map("orderItem")
 }
