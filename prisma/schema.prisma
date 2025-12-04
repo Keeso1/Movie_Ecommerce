@@ -100,7 +100,7 @@ model Verification {
 //
 
 model Address {
-  id         String @id
+  id         String @id @default(uuid())
   street     String
   postalCode String
   city       String
@@ -118,7 +118,7 @@ model Address {
 //
 
 model Movie {
-  id          String   @id
+  id          String   @id @default(uuid())
   title       String
   description String
   price       Decimal
@@ -137,7 +137,7 @@ model Movie {
 }
 
 model Genre {
-  id          String  @id
+  id          String  @id @default(uuid())
   name        String
   description String?
 
@@ -146,7 +146,7 @@ model Genre {
 }
 
 model MoviePerson {
-  id   String @id
+  id   String @id @default(uuid())
   name String
   role String
 
@@ -161,7 +161,7 @@ model MoviePerson {
 //
 
 model Order {
-  id                String   @id
+  id                String   @id @default(uuid())
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   status            String
@@ -175,7 +175,7 @@ model Order {
 }
 
 model OrderItem {
-  id              String  @id
+  id              String  @id @default(uuid())
   orderId         String
   movieId         String
   quantity        Int
