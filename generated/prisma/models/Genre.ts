@@ -205,14 +205,14 @@ export type GenreScalarWhereWithAggregatesInput = {
 }
 
 export type GenreCreateInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   movies?: Prisma.MovieCreateNestedManyWithoutGenresInput
 }
 
 export type GenreUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   movies?: Prisma.MovieUncheckedCreateNestedManyWithoutGenresInput
@@ -233,7 +233,7 @@ export type GenreUncheckedUpdateInput = {
 }
 
 export type GenreCreateManyInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
 }
@@ -317,13 +317,13 @@ export type GenreUncheckedUpdateManyWithoutMoviesNestedInput = {
 }
 
 export type GenreCreateWithoutMoviesInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
 }
 
 export type GenreUncheckedCreateWithoutMoviesInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
 }

@@ -17,10 +17,10 @@ import type * as Prisma from "./prismaNamespace"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.0.1",
-  "engineVersion": "f09f2815f091dbba658cdcd2264306d88bb5bda6",
+  "clientVersion": "7.1.0",
+  "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider   = \"prisma-client\" // or `prisma-client-js`\n  output     = \"../generated/prisma\"\n  engineType = \"client\" // enable Prisma ORM without Rust\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n//\n// ─────────────────────────────────────────\n//   AUTH BASE TABLES (BetterAuth)\n// ─────────────────────────────────────────\n//\n\nmodel User {\n  id            String    @id\n  name          String\n  email         String\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  role          String?\n  banned        Boolean?  @default(false)\n  banReason     String?\n  banExpires    DateTime?\n  sessions      Session[]\n  accounts      Account[]\n\n  addressId String?  @unique\n  address   Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)\n\n  orders Order[]\n\n  @@unique([email])\n  @@map(\"user\")\n}\n\nmodel Session {\n  id             String   @id\n  expiresAt      DateTime\n  token          String\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n  ipAddress      String?\n  userAgent      String?\n  userId         String   @unique\n  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  impersonatedBy String?\n\n  @@unique([token])\n  @@index([userId])\n  @@map(\"session\")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String    @unique\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map(\"account\")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map(\"verification\")\n}\n\n//\n// ─────────────────────────────────────────\n//   ADDRESS\n// ─────────────────────────────────────────\n//\n\nmodel Address {\n  id         String @id\n  street     String\n  postalCode String\n  city       String\n  country    String\n\n  user   User?\n  orders Order[]\n\n  @@map(\"address\")\n}\n\n//\n// ─────────────────────────────────────────\n//   MOVIE DOMAIN\n// ─────────────────────────────────────────\n//\n\nmodel Movie {\n  id          String   @id\n  title       String\n  description String\n  price       Decimal\n  releaseDate DateTime\n  imageUrl    String\n  runtime     Int?\n  deleted     Boolean? @default(false)\n\n  // Relations\n  orderItems OrderItem[]\n\n  // IMPLICIT MANY-TO-MANY\n  genres       Genre[] // Prisma generates _MovieToGenre\n  moviePersons MoviePerson[] // Prisma generates _MovieToMoviePerson\n\n  @@map(\"movie\")\n}\n\nmodel Genre {\n  id          String  @id\n  name        String\n  description String?\n\n  movies Movie[] // implicit m:n\n\n  @@map(\"genre\")\n}\n\nmodel MoviePerson {\n  id   String @id\n  name String\n  role String\n\n  movies Movie[] // implicit m:n\n\n  @@map(\"moviePerson\")\n}\n\n//\n// ─────────────────────────────────────────\n//   ORDER + ORDER ITEMS\n// ─────────────────────────────────────────\n//\n\nmodel Order {\n  id                String   @id\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n  status            String\n  userId            String\n  shippingAddressId String\n\n  user            User        @relation(fields: [userId], references: [id])\n  shippingAddress Address     @relation(fields: [shippingAddressId], references: [id])\n  items           OrderItem[]\n\n  @@map(\"order\")\n}\n\nmodel OrderItem {\n  id              String  @id\n  orderId         String\n  movieId         String\n  quantity        Int\n  priceAtPurchase Decimal\n\n  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)\n  movie Movie @relation(fields: [movieId], references: [id])\n\n  @@map(\"orderItem\")\n}\n",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider   = \"prisma-client\" // or `prisma-client-js`\n  output     = \"../generated/prisma\"\n  engineType = \"client\" // enable Prisma ORM without Rust\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n//\n// ─────────────────────────────────────────\n//   AUTH BASE TABLES (BetterAuth)\n// ─────────────────────────────────────────\n//\n\nmodel User {\n  id            String    @id\n  name          String\n  email         String\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  role          String?\n  banned        Boolean?  @default(false)\n  banReason     String?\n  banExpires    DateTime?\n  sessions      Session[]\n  accounts      Account[]\n\n  addressId String?  @unique\n  address   Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)\n\n  orders Order[]\n\n  @@unique([email])\n  @@map(\"user\")\n}\n\nmodel Session {\n  id             String   @id\n  expiresAt      DateTime\n  token          String\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n  ipAddress      String?\n  userAgent      String?\n  userId         String   @unique\n  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  impersonatedBy String?\n\n  @@unique([token])\n  @@index([userId])\n  @@map(\"session\")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String    @unique\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map(\"account\")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map(\"verification\")\n}\n\n//\n// ─────────────────────────────────────────\n//   ADDRESS\n// ─────────────────────────────────────────\n//\n\nmodel Address {\n  id         String @id @default(uuid())\n  street     String\n  postalCode String\n  city       String\n  country    String\n\n  user   User?\n  orders Order[]\n\n  @@map(\"address\")\n}\n\n//\n// ─────────────────────────────────────────\n//   MOVIE DOMAIN\n// ─────────────────────────────────────────\n//\n\nmodel Movie {\n  id          String   @id @default(uuid())\n  title       String\n  description String\n  price       Decimal\n  releaseDate DateTime\n  imageUrl    String\n  runtime     Int?\n  deleted     Boolean? @default(false)\n\n  // Relations\n  orderItems OrderItem[]\n\n  // IMPLICIT MANY-TO-MANY\n  genres       Genre[] // Prisma generates _MovieToGenre\n  moviePersons MoviePerson[] // Prisma generates _MovieToMoviePerson\n\n  @@map(\"movie\")\n}\n\nmodel Genre {\n  id          String  @id @default(uuid())\n  name        String\n  description String?\n\n  movies Movie[] // implicit m:n\n\n  @@map(\"genre\")\n}\n\nmodel MoviePerson {\n  id   String @id @default(uuid())\n  name String\n  role String\n\n  movies Movie[] // implicit m:n\n\n  @@map(\"moviePerson\")\n}\n\n//\n// ─────────────────────────────────────────\n//   ORDER + ORDER ITEMS\n// ─────────────────────────────────────────\n//\n\nmodel Order {\n  id                String   @id @default(uuid())\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n  status            String\n  userId            String\n  shippingAddressId String\n\n  user            User        @relation(fields: [userId], references: [id])\n  shippingAddress Address     @relation(fields: [shippingAddressId], references: [id])\n  items           OrderItem[]\n\n  @@map(\"order\")\n}\n\nmodel OrderItem {\n  id              String  @id @default(uuid())\n  orderId         String\n  movieId         String\n  quantity        Int\n  priceAtPurchase Decimal\n\n  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)\n  movie Movie @relation(fields: [movieId], references: [id])\n\n  @@map(\"orderItem\")\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -62,7 +62,7 @@ export interface PrismaClientConstructor {
    * const users = await prisma.user.findMany()
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+   * Read more in our [docs](https://pris.ly/d/client).
    */
 
   new <
@@ -84,7 +84,7 @@ export interface PrismaClientConstructor {
  * const users = await prisma.user.findMany()
  * ```
  * 
- * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ * Read more in our [docs](https://pris.ly/d/client).
  */
 
 export interface PrismaClient<
@@ -113,7 +113,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -125,7 +125,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -136,7 +136,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -148,7 +148,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 

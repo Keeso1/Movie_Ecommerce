@@ -205,14 +205,14 @@ export type MoviePersonScalarWhereWithAggregatesInput = {
 }
 
 export type MoviePersonCreateInput = {
-  id: string
+  id?: string
   name: string
   role: string
   movies?: Prisma.MovieCreateNestedManyWithoutMoviePersonsInput
 }
 
 export type MoviePersonUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   role: string
   movies?: Prisma.MovieUncheckedCreateNestedManyWithoutMoviePersonsInput
@@ -233,7 +233,7 @@ export type MoviePersonUncheckedUpdateInput = {
 }
 
 export type MoviePersonCreateManyInput = {
-  id: string
+  id?: string
   name: string
   role: string
 }
@@ -317,13 +317,13 @@ export type MoviePersonUncheckedUpdateManyWithoutMoviesNestedInput = {
 }
 
 export type MoviePersonCreateWithoutMoviesInput = {
-  id: string
+  id?: string
   name: string
   role: string
 }
 
 export type MoviePersonUncheckedCreateWithoutMoviesInput = {
-  id: string
+  id?: string
   name: string
   role: string
 }

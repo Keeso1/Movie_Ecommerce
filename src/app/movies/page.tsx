@@ -1,18 +1,19 @@
 import MovieCard from "@/components/movie-card/MovieCard";
 import prisma from "@/lib/prisma";
-import type { Movie, MovieGenre } from "@/types/movie";
+import type { Movie } from "@/types/movie";
 
 export default async function MoviesPage() {
-  const movies = await prisma.movie.findMany({
+  // Fetch movies with genres using Prisma's implicit many-to-many
+  const moviesFromDb = await prisma.movie.findMany({
     where: { deleted: false },
     include: {
-      genres: true,
+      genres: true, // This includes the Genre[] array
     },
     orderBy: { title: "asc" },
   });
 
   // Add "A New Hope" movie manually
-  const aNewHope = {
+  const aNewHope: Movie = {
     id: "a-new-hope",
     title: "Star Wars: A New Hope",
     description:
@@ -22,59 +23,23 @@ export default async function MoviesPage() {
     imageUrl: "/A new hope.jpg",
     runtime: 121,
     genres: [
-      { genreId: "sci-fi", genre: { id: "sci-fi", name: "Sci-Fi" } },
-      { genreId: "adventure", genre: { id: "adventure", name: "Adventure" } },
+      { id: "sci-fi", name: "Sci-Fi", description: null },
+      { id: "adventure", name: "Adventure", description: null },
     ],
   };
 
-  // Map genres to expected MovieGenre structure for MovieCard
+  // Convert Prisma types to client-safe types
+  const movies: Movie[] = moviesFromDb.map((movie) => ({
+    ...movie,
+    price: Number(movie.price), // Convert Decimal to number
+    releaseDate:
+      movie.releaseDate instanceof Date
+        ? movie.releaseDate.toISOString()
+        : movie.releaseDate,
+    // genres is already Genre[] from Prisma
+  }));
 
-  const moviesWithGenres: Movie[] = movies.map((movie) => {
-    // Map genres to MovieGenre[]
-    type GenreWithRelation = {
-      id?: string;
-      genreId?: string;
-      name?: string;
-      genre?: {
-        id: string;
-        name: string;
-      };
-    };
-
-    const genres: MovieGenre[] = Array.isArray(movie.genres)
-      ? movie.genres.map((g: GenreWithRelation) => {
-          // If genre relation exists (from include), use it; else fallback to flat genre
-          if (g.genre) {
-            return {
-              genreId: String(g.genreId),
-              genre: {
-                id: String(g.genre.id),
-                name: g.genre.name || "",
-              },
-            };
-          } else {
-            return {
-              genreId: String(g.id),
-              genre: {
-                id: String(g.id),
-                name: g.name || "",
-              },
-            };
-          }
-        })
-      : [];
-    return {
-      ...movie,
-      price: Number(movie.price),
-      releaseDate:
-        movie.releaseDate instanceof Date
-          ? movie.releaseDate.toISOString()
-          : movie.releaseDate,
-      genres,
-    };
-  });
-
-  const allMovies = [aNewHope, ...moviesWithGenres];
+  const allMovies = [aNewHope, ...movies];
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6">

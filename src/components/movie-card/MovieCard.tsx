@@ -45,14 +45,14 @@ export default function MovieCard({ movie }: MovieCardProps) {
         </div>
 
         {/* Genres */}
-        {movie.genres.length > 0 && (
+        {movie.genres && movie.genres.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1">
-            {movie.genres.map((mg) => (
+            {movie.genres.map((genre) => (
               <span
-                key={mg.genreId}
+                key={genre.id}
                 className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs"
               >
-                {mg.genre.name}
+                {genre.name}
               </span>
             ))}
           </div>

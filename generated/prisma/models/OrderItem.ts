@@ -272,7 +272,7 @@ export type OrderItemScalarWhereWithAggregatesInput = {
 }
 
 export type OrderItemCreateInput = {
-  id: string
+  id?: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
   order: Prisma.OrderCreateNestedOneWithoutItemsInput
@@ -280,7 +280,7 @@ export type OrderItemCreateInput = {
 }
 
 export type OrderItemUncheckedCreateInput = {
-  id: string
+  id?: string
   orderId: string
   movieId: string
   quantity: number
@@ -304,7 +304,7 @@ export type OrderItemUncheckedUpdateInput = {
 }
 
 export type OrderItemCreateManyInput = {
-  id: string
+  id?: string
   orderId: string
   movieId: string
   quantity: number
@@ -462,14 +462,14 @@ export type IntFieldUpdateOperationsInput = {
 }
 
 export type OrderItemCreateWithoutMovieInput = {
-  id: string
+  id?: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
   order: Prisma.OrderCreateNestedOneWithoutItemsInput
 }
 
 export type OrderItemUncheckedCreateWithoutMovieInput = {
-  id: string
+  id?: string
   orderId: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -513,14 +513,14 @@ export type OrderItemScalarWhereInput = {
 }
 
 export type OrderItemCreateWithoutOrderInput = {
-  id: string
+  id?: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
   movie: Prisma.MovieCreateNestedOneWithoutOrderItemsInput
 }
 
 export type OrderItemUncheckedCreateWithoutOrderInput = {
-  id: string
+  id?: string
   movieId: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -553,7 +553,7 @@ export type OrderItemUpdateManyWithWhereWithoutOrderInput = {
 }
 
 export type OrderItemCreateManyMovieInput = {
-  id: string
+  id?: string
   orderId: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -581,7 +581,7 @@ export type OrderItemUncheckedUpdateManyWithoutMovieInput = {
 }
 
 export type OrderItemCreateManyOrderInput = {
-  id: string
+  id?: string
   movieId: string
   quantity: number
   priceAtPurchase: runtime.Decimal | runtime.DecimalJsLike | number | string
