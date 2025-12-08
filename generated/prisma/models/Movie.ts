@@ -311,7 +311,7 @@ export type MovieScalarWhereWithAggregatesInput = {
 }
 
 export type MovieCreateInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -325,7 +325,7 @@ export type MovieCreateInput = {
 }
 
 export type MovieUncheckedCreateInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -367,7 +367,7 @@ export type MovieUncheckedUpdateInput = {
 }
 
 export type MovieCreateManyInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -564,7 +564,7 @@ export type MovieUpdateOneRequiredWithoutOrderItemsNestedInput = {
 }
 
 export type MovieCreateWithoutGenresInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -577,7 +577,7 @@ export type MovieCreateWithoutGenresInput = {
 }
 
 export type MovieUncheckedCreateWithoutGenresInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -625,7 +625,7 @@ export type MovieScalarWhereInput = {
 }
 
 export type MovieCreateWithoutMoviePersonsInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -638,7 +638,7 @@ export type MovieCreateWithoutMoviePersonsInput = {
 }
 
 export type MovieUncheckedCreateWithoutMoviePersonsInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -672,7 +672,7 @@ export type MovieUpdateManyWithWhereWithoutMoviePersonsInput = {
 }
 
 export type MovieCreateWithoutOrderItemsInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -685,7 +685,7 @@ export type MovieCreateWithoutOrderItemsInput = {
 }
 
 export type MovieUncheckedCreateWithoutOrderItemsInput = {
-  id: string
+  id?: string
   title: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string

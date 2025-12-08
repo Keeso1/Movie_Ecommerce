@@ -247,7 +247,7 @@ export type OrderScalarWhereWithAggregatesInput = {
 }
 
 export type OrderCreateInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -257,7 +257,7 @@ export type OrderCreateInput = {
 }
 
 export type OrderUncheckedCreateInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -287,7 +287,7 @@ export type OrderUncheckedUpdateInput = {
 }
 
 export type OrderCreateManyInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -452,7 +452,7 @@ export type OrderUpdateOneRequiredWithoutItemsNestedInput = {
 }
 
 export type OrderCreateWithoutUserInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -461,7 +461,7 @@ export type OrderCreateWithoutUserInput = {
 }
 
 export type OrderUncheckedCreateWithoutUserInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -508,7 +508,7 @@ export type OrderScalarWhereInput = {
 }
 
 export type OrderCreateWithoutShippingAddressInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -517,7 +517,7 @@ export type OrderCreateWithoutShippingAddressInput = {
 }
 
 export type OrderUncheckedCreateWithoutShippingAddressInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -552,7 +552,7 @@ export type OrderUpdateManyWithWhereWithoutShippingAddressInput = {
 }
 
 export type OrderCreateWithoutItemsInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -561,7 +561,7 @@ export type OrderCreateWithoutItemsInput = {
 }
 
 export type OrderUncheckedCreateWithoutItemsInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -604,7 +604,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
 }
 
 export type OrderCreateManyUserInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string
@@ -638,7 +638,7 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
 }
 
 export type OrderCreateManyShippingAddressInput = {
-  id: string
+  id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: string

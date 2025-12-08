@@ -232,7 +232,7 @@ export type AddressScalarWhereWithAggregatesInput = {
 }
 
 export type AddressCreateInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
@@ -242,7 +242,7 @@ export type AddressCreateInput = {
 }
 
 export type AddressUncheckedCreateInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
@@ -272,7 +272,7 @@ export type AddressUncheckedUpdateInput = {
 }
 
 export type AddressCreateManyInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
@@ -360,7 +360,7 @@ export type AddressUpdateOneRequiredWithoutOrdersNestedInput = {
 }
 
 export type AddressCreateWithoutUserInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
@@ -369,7 +369,7 @@ export type AddressCreateWithoutUserInput = {
 }
 
 export type AddressUncheckedCreateWithoutUserInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
@@ -412,7 +412,7 @@ export type AddressUncheckedUpdateWithoutUserInput = {
 }
 
 export type AddressCreateWithoutOrdersInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
@@ -421,7 +421,7 @@ export type AddressCreateWithoutOrdersInput = {
 }
 
 export type AddressUncheckedCreateWithoutOrdersInput = {
-  id: string
+  id?: string
   street: string
   postalCode: string
   city: string
