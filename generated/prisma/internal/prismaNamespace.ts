@@ -1275,7 +1275,8 @@ export const MovieScalarFieldEnum = {
   releaseDate: 'releaseDate',
   imageUrl: 'imageUrl',
   runtime: 'runtime',
-  deleted: 'deleted'
+  deleted: 'deleted',
+  stock: 'stock'
 } as const
 
 export type MovieScalarFieldEnum = (typeof MovieScalarFieldEnum)[keyof typeof MovieScalarFieldEnum]
