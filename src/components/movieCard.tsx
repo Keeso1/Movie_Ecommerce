@@ -1,23 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getMovieType } from "@/actions/movie-actions";
 
-import { MovieModel } from "../../generated/prisma/models";
-
-export default function MovieCard({ movie }: { movie: MovieModel }) {
+export default function MovieCard({ movie }: { movie: getMovieType }) {
   return (
     <Link
       href={`/movie/${movie.id}`}
-      className="block bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
+      className="flex flex-col flex-wrap bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
     >
-      <div className="relative aspect-2/3 bg-gray-200">
+      <div className="relative bg-gray-200">
         {movie.imageUrl ? (
           <Image
             src={movie.imageUrl}
             alt={movie.title}
-            fill
+            width={300}
+            height={500}
             className="object-cover"
-            sizes="200px"
-            priority={Number(movie.id) === 1} // Preload if it's the Star Wars card
           />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
@@ -36,6 +34,13 @@ export default function MovieCard({ movie }: { movie: MovieModel }) {
           {movie.runtime !== null && <span>{movie.runtime} min</span>}
         </div>
 
+        <div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-600">
+          <span>
+            {movie.genres.map((genre) => (
+              <p key={genre.id}>{genre.name}</p>
+            ))}
+          </span>
+        </div>
 
         {movie.price !== null && (
           <div className="mt-4 text-green-600 font-semibold">
