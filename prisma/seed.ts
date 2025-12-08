@@ -12,6 +12,14 @@ async function main() {
   });
   console.log(`Created genre with id: ${genre1.id}`);
 
+  const genre2 = await prisma.genre.create({
+    data: {
+      name: "Thriller",
+      description: "Scary",
+    },
+  });
+  console.log(`Created genre with id: ${genre2.id}`);
+
   // Create a MoviePerson
   const moviePerson1 = await prisma.moviePerson.create({
     data: {
@@ -20,6 +28,22 @@ async function main() {
     },
   });
   console.log(`Created movie person with id: ${moviePerson1.id}`);
+
+  const moviePerson2 = await prisma.moviePerson.create({
+    data: {
+      name: "Frodo",
+      role: "Director",
+    },
+  });
+  console.log(`Created movie person with id: ${moviePerson2.id}`);
+
+  const moviePerson3 = await prisma.moviePerson.create({
+    data: {
+      name: "Brosef",
+      role: "Actor",
+    },
+  });
+  console.log(`Created movie person with id: ${moviePerson3.id}`);
 
   // Create a Movie
   const movie1 = await prisma.movie.create({
@@ -31,10 +55,10 @@ async function main() {
       imageUrl: "/A_new_hope.jpg",
       runtime: 120,
       genres: {
-        connect: { id: genre1.id },
+        connect: [{ id: genre1.id }, {id: genre2.id}],
       },
       moviePersons: {
-        connect: { id: moviePerson1.id },
+        connect: [{ id: moviePerson1.id }, {id: moviePerson2.id}, {id: moviePerson3.id}],
       },
     },
   });
