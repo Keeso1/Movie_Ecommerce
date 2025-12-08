@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getMovieType } from "@/actions/movie-actions";
-
+import { authClient } from "@/lib/auth-client";
 export default function MovieCard({ movie }: { movie: getMovieType }) {
   return (
     <Link
-      href={`/movies/${movie.id}`}
+      href={
+        authClient.admin ? `/admin/movies/${movie.id}` : `/movies/${movie.id}`
+      }
       className="flex flex-col flex-wrap bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
     >
       <div className="relative bg-gray-200">
