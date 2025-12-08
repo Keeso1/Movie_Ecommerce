@@ -12,9 +12,12 @@ export const getMovies = async () => {
 }
 
 export const getMovieById = async (id: string) => {
+    if (!id) {
+        return null;
+    }
     return await prisma.movie.findUnique({
         where: {
-            id
+            id: id,
         },
         include: {
             genres: true,

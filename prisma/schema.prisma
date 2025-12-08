@@ -126,6 +126,7 @@ model Movie {
   imageUrl    String
   runtime     Int?
   deleted     Boolean? @default(false)
+  stock       Int      @default(1)
 
   // Relations
   orderItems OrderItem[]
