@@ -32,9 +32,8 @@ const options = [
 
 export type ComboBoxOptions = typeof options;
 
-export function Combobox( {options } : {options : ComboBoxOptions}) {
+export function Combobox( {options, value, onValueChange } : {options : ComboBoxOptions, value: string | undefined, onValueChange: (value: string | undefined) => void}) {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -53,7 +52,7 @@ export function Combobox( {options } : {options : ComboBoxOptions}) {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search option..." />
+          <CommandInput placeholder="Search genre..." />
           <CommandList>
             <CommandEmpty>No option found.</CommandEmpty>
             <CommandGroup>
@@ -62,7 +61,7 @@ export function Combobox( {options } : {options : ComboBoxOptions}) {
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                    onValueChange(currentValue === value ? undefined : currentValue)
                     setOpen(false)
                   }}
                 >
