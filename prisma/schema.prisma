@@ -139,7 +139,7 @@ model Movie {
 
 model Genre {
   id          String  @id @default(uuid())
-  name        String
+  name        String  @unique
   description String?
 
   movies Movie[] // implicit m:n

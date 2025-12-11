@@ -26,5 +26,10 @@ export const getMovieById = async (id: string) => {
     });
 }
 
+export const getGenres = async () => {
+    return await prisma.genre.findMany();
+}
+
+export type getGenresType = Awaited<ReturnType<typeof getGenres>>;
 export type getMoviesType = Awaited<ReturnType<typeof getMovies>>;
 export type getMovieType = getMoviesType[0]

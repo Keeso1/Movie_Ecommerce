@@ -3,7 +3,7 @@
 "use server";
 
 // Update the path below to the correct location of your schema file
-import movieSchema from "@/lib/validation/movieSchema";
+import {movieSchema} from "@/lib/movieSchema";
 import prisma from "@/lib/prisma";
 
 export async function listMovies() {
