@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getMovieType } from "@/actions/movie-actions";
 import { authClient } from "@/lib/auth-client";
-
 export default function MovieCard({ movie }: { movie: getMovieType }) {
   
   return (
