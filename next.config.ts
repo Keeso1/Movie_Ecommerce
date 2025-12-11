@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "example.com",
+        protocol: "https",
+        hostname: "your-actual-image-cdn.com", // TODO: Replace with actual image CDN domain
       },
     ],
   },
