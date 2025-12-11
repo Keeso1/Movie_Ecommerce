@@ -55,7 +55,7 @@ export default function SignInPage() {
         });
         router.push("/");
       }
-    } catch (error) {
+    } catch {
       toast("Error", {
         description: "An unexpected error occurred",
       });
