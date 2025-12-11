@@ -1,6 +1,6 @@
 /*  Zod validation schema for movie data  */
 
-import z from "zod";
+import { z } from "zod";
 
 export const movieSchema = z.object({
   title: z.string().min(1, "Title is required"),
