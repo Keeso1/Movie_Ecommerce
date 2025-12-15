@@ -1,10 +1,53 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { MovieOrderByWithRelationInput } from "../../generated/prisma/models";
+import {
+  MovieOrderByWithRelationInput,
+  MovieWhereInput,
+} from "../../generated/prisma/models";
 type sortingOptions = "recent" | "oldest" | "price" | "popularity";
 
-export const getMovies = async (sort: sortingOptions, genre?: string) => {
+export const getMovies = async (
+  sort: sortingOptions,
+  genre?: string,
+  search?: string,
+) => {
+  const whereClause: MovieWhereInput = {
+    AND: [
+      genre
+        ? {
+            genres: {
+              some: {
+                name: genre,
+              },
+            },
+          }
+        : {},
+      search
+        ? {
+            OR: [
+              {
+                moviePersons: {
+                  some: {
+                    name: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                title: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {},
+    ],
+  };
+
   let orderByClause: MovieOrderByWithRelationInput;
   switch (sort) {
     case "recent":
@@ -20,15 +63,7 @@ export const getMovies = async (sort: sortingOptions, genre?: string) => {
       orderByClause = { releaseDate: "asc" };
   }
   const movies = await prisma.movie.findMany({
-    where: genre
-      ? {
-          genres: {
-            some: {
-              name: genre,
-            },
-          },
-        }
-      : {},
+    where: whereClause,
     include: {
       genres: true,
       moviePersons: true,
