@@ -1,8 +1,24 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { MovieOrderByWithRelationInput } from "../../generated/prisma/models";
+type sortingOptions = "recent" | "oldest" | "price" | "popularity";
 
-export const getMovies = async (genre?: string) => {
+export const getMovies = async (sort: sortingOptions, genre?: string) => {
+  let orderByClause: MovieOrderByWithRelationInput;
+  switch (sort) {
+    case "recent":
+      orderByClause = { releaseDate: "asc" };
+      break;
+    case "oldest":
+      orderByClause = { releaseDate: "desc" };
+      break;
+    case "price":
+      orderByClause = { price: "asc" };
+      break;
+    default:
+      orderByClause = { releaseDate: "asc" };
+  }
   const movies = await prisma.movie.findMany({
     where: genre
       ? {
@@ -17,6 +33,7 @@ export const getMovies = async (genre?: string) => {
       genres: true,
       moviePersons: true,
     },
+    orderBy: orderByClause,
   });
   return movies.map((movie) => ({ ...movie, price: movie.price.toNumber() }));
 };
