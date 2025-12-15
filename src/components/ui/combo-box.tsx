@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
+import * as React from "react";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -12,12 +12,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 const options = [
   {
@@ -28,12 +28,20 @@ const options = [
     value: "sveltekit",
     label: "SvelteKit",
   },
-]
+];
 
 export type ComboBoxOptions = typeof options;
 
-export function Combobox( {options, value, onValueChange } : {options : ComboBoxOptions, value: string | undefined, onValueChange: (value: string | undefined) => void}) {
-  const [open, setOpen] = React.useState(false)
+export function Combobox({
+  options,
+  value,
+  onValueChange,
+}: {
+  options: ComboBoxOptions;
+  value: string | undefined;
+  onValueChange: (value: string | undefined) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -61,14 +69,16 @@ export function Combobox( {options, value, onValueChange } : {options : ComboBox
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? undefined : currentValue)
-                    setOpen(false)
+                    onValueChange(
+                      currentValue === value ? undefined : currentValue,
+                    );
+                    setOpen(false);
                   }}
                 >
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      value === option.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                   {option.label}
@@ -79,5 +89,6 @@ export function Combobox( {options, value, onValueChange } : {options : ComboBox
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
+

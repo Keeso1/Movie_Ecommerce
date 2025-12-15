@@ -1,12 +1,17 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { getMovieType } from "@/actions/movie-actions";
 import { authClient } from "@/lib/auth-client";
 export default function MovieCard({ movie }: { movie: getMovieType }) {
-  
+  const session = authClient.useSession();
   return (
     <Link
-      href={authClient.admin ? `/admin/movies/${movie.id}` : `/movies/${movie.id}`}
+      href={
+        session.data?.user.role === "admin"
+          ? `/admin/movies/${movie.id}`
+          : `/movies/${movie.id}`
+      }
       className="flex flex-col flex-wrap bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
     >
       <div className="relative bg-gray-200">
@@ -36,14 +41,13 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
         </div>
 
         <div className="mt-2 text-sm text-gray-600 truncate">
-          <p>{movie.genres.map(genre => genre.name).join(' • ')}</p>
+          <p>{movie.genres.map((genre) => genre.name).join(" • ")}</p>
         </div>
 
         {movie.price !== null && (
           <div className="flex flex-row justify-between mt-4 text-green-600 font-semibold">
             <p>${movie.price.toFixed(2)}</p>
             <p>{movie.stock} in stock</p>
-            
           </div>
         )}
       </div>
