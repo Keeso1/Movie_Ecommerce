@@ -2,8 +2,9 @@
 import { Combobox } from "./ui/combo-box";
 import { getGenresType } from "@/actions/movie-actions";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "./ui/input";
+import useDebounce from "@/hooks/debounce";
 
 export default function MovieFilter({
   genres,
@@ -17,6 +18,8 @@ export default function MovieFilter({
   const router = useRouter();
   const path = usePathname();
   const searchParams = useSearchParams();
+  const [searchValue, setSearchValue] = useState(values?.search ?? "");
+  const debouncedSearchValue = useDebounce(searchValue, 500);
 
   const genresArr = genres.map((genre) => ({
     value: genre.name,
@@ -36,18 +39,24 @@ export default function MovieFilter({
     },
     [searchParams],
   );
+
+  useEffect(() => {
+    if (debouncedSearchValue !== (values?.search ?? "")) {
+      router.push(
+        path + "?" + createQueryString("search", debouncedSearchValue),
+      );
+    }
+  }, [debouncedSearchValue, values?.search, path, createQueryString, router]);
+
   console.log("genre", values ? values.genre : undefined);
   return (
     <div className="flex flex-col flex-wrap">
       <Input
         type="search"
-        onChange={(input) => {
-          router.push(
-            path + "?" + createQueryString("search", input.currentTarget.value),
-          );
-        }}
         placeholder="Search..."
-      ></Input>
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+      />
       <Combobox
         options={genresArr}
         value={values ? values.genre : undefined}
