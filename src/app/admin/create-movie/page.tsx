@@ -1,16 +1,14 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 import z from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldContent,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 // import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -19,12 +17,14 @@ import { useState } from "react";
 // import { getMoviePersons } from "@/actions/create-movie-actions";
 
 const schema = z.object({
-  title: z.string(),
-  description: z.string(),
-  runtime: z.number(),
-  releaseDate: z.iso.date(),
-  price: z.number(),
-  stock: z.number(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  runtime: z.number().min(1, "Runtime must be greater than 0"),
+  releaseDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid date",
+  }),
+  price: z.number().min(0, "Price can't be negative"),
+  stock: z.number().min(0, "Stock can't be negative"),
   moviePersons: z.string().array(),
   genres: z.string().array(),
 });
@@ -50,7 +50,7 @@ export default function CreateMoviePage() {
       title: "",
       description: "",
       runtime: 0,
-      releaseDate: new Date().toDateString(),
+      releaseDate: new Date().toISOString().split("T")[0],
       price: 0,
       stock: 0,
       moviePersons: new Array<string>(),
@@ -65,98 +65,72 @@ export default function CreateMoviePage() {
   };
 
   return (
-    <Form {...form}>
+    <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          disabled={isLoading}
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+        <Field>
+          <FieldLabel>Title</FieldLabel>
+          <FieldContent>
+            <Input {...form.register("title")} disabled={isLoading} />
+            <FieldError errors={[form.formState.errors.title]} />
+          </FieldContent>
+        </Field>
 
-        <FormField
-          disabled={isLoading}
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+        <Field>
+          <FieldLabel>Description</FieldLabel>
+          <FieldContent>
+            <Input {...form.register("description")} disabled={isLoading} />
+            <FieldError errors={[form.formState.errors.description]} />
+          </FieldContent>
+        </Field>
 
-        <FormField
-          disabled={isLoading}
-          control={form.control}
-          name="runtime"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Runtime</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+        <Field>
+          <FieldLabel>Runtime</FieldLabel>
+          <FieldContent>
+            <Input
+              type="number"
+              {...form.register("runtime", { valueAsNumber: true })}
+              disabled={isLoading}
+            />
+            <FieldError errors={[form.formState.errors.runtime]} />
+          </FieldContent>
+        </Field>
 
-        <FormField
-          disabled={isLoading}
-          control={form.control}
-          name="releaseDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>ReleaseDate</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+        <Field>
+          <FieldLabel>ReleaseDate</FieldLabel>
+          <FieldContent>
+            <Input
+              type="date"
+              {...form.register("releaseDate")}
+              disabled={isLoading}
+            />
+            <FieldError errors={[form.formState.errors.releaseDate]} />
+          </FieldContent>
+        </Field>
 
-        <FormField
-          disabled={isLoading}
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+        <Field>
+          <FieldLabel>Price</FieldLabel>
+          <FieldContent>
+            <Input
+              type="number"
+              {...form.register("price", { valueAsNumber: true })}
+              disabled={isLoading}
+            />
+            <FieldError errors={[form.formState.errors.price]} />
+          </FieldContent>
+        </Field>
 
-        <FormField
-          disabled={isLoading}
-          control={form.control}
-          name="stock"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Stock</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+        <Field>
+          <FieldLabel>Stock</FieldLabel>
+          <FieldContent>
+            <Input
+              type="number"
+              {...form.register("stock", { valueAsNumber: true })}
+              disabled={isLoading}
+            />
+            <FieldError errors={[form.formState.errors.stock]} />
+          </FieldContent>
+        </Field>
       </form>
-    </Form>
+    </FormProvider>
   );
 }
