@@ -19,27 +19,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const options = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-];
-
-export type ComboBoxOptions = typeof options;
+export type ComboBoxOptions = {
+  value: string;
+  label: string;
+}[];
 
 export function Combobox({
   options,
   value,
-  onValueChange,
+  onValueChangeAction,
 }: {
   options: ComboBoxOptions;
   value: string | undefined;
-  onValueChange: (value: string | undefined) => void;
+  onValueChangeAction: (value: string | undefined) => void;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -69,7 +61,7 @@ export function Combobox({
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    onValueChange(
+                    onValueChangeAction(
                       currentValue === value ? undefined : currentValue,
                     );
                     setOpen(false);
@@ -91,4 +83,3 @@ export function Combobox({
     </Popover>
   );
 }
-
