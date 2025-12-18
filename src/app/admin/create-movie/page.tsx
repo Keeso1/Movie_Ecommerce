@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 // import MultipleSelectDemo from "@/components/ui/select-32";
 // import { getMoviePersons } from "@/actions/create-movie-actions";
+// import MultipleSelector from "@/components/ui/multi-select";
+// import { getActors } from "@/actions/create-movie-actions";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -38,6 +40,7 @@ export default function CreateMoviePage() {
   const [isLoading, setIsLoading] = useState(false);
   const session = authClient.useSession();
   // const [isAuthorised, setIsAuthorised] = useState(false)
+  // const [actors, setActors] = useState<{ value: string; label: string }[]>([]);
 
   if (session.data?.user.role !== "admin") {
     router.push("/");
@@ -130,6 +133,19 @@ export default function CreateMoviePage() {
             <FieldError errors={[form.formState.errors.stock]} />
           </FieldContent>
         </Field>
+
+        {/* <Field> */}
+        {/*   <FieldLabel>Actors</FieldLabel> */}
+        {/*   <FieldContent> */}
+        {/*     <MultipleSelector */}
+        {/*       options={actors} */}
+        {/*       value={form.register(name: "moviePersons", )} */}
+        {/*       onValueChange={form.register} */}
+        {/*       placeholder="Choose frameworks..." */}
+        {/*     /> */}
+        {/*     <FieldError errors={[form.formState.errors.stock]} /> */}
+        {/*   </FieldContent> */}
+        {/* </Field> */}
       </form>
     </FormProvider>
   );

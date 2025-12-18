@@ -122,7 +122,7 @@ model Movie {
   id          String   @id @default(uuid())
   title       String
   description String
-  price       Decimal
+  price       Int
   releaseDate DateTime
   imageUrl    String
   runtime     Int?
