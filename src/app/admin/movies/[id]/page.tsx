@@ -1,44 +1,201 @@
-import { getMovieById } from "@/actions/movie-actions";
-import Image from "next/image";
+//          { UPDATE page for the Admin to edit & update movie details }
 
-export default async function MoviePage(props: { params: { id: string } }) {
-  const params = await props.params;
-  const movie = await getMovieById(params.id);
+import { prisma } from "@/lib/prisma";
+import { updateMovie } from "../movie_update";
+import { notFound } from "next/navigation";
 
-  if (!movie) {
-    return <div>Movie not found</div>;
-  }
+export default async function AdminEditMoviePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const movie = await prisma.movie.findUnique({
+    where: { id: params.id },
+    include: {
+      genres: true,
+      moviePersons: true,
+    },
+  });
+
+  if (!movie) notFound();
+
+  const allGenres = await prisma.genre.findMany({
+    orderBy: { name: "asc" },
+  });
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="relative h-120">
-          {movie.imageUrl ? (
-            <Image
-              src={movie.imageUrl}
-              alt={movie.title}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              No Image
-            </div>
-          )}
+    <div className="max-w-4xl space-y-8">
+      <h1 className="text-2xl font-semibold">Edit movie: {movie.title}</h1>
+
+      <form action={updateMovie} className="space-y-6">
+        {/* RequireD */}
+
+        <input type="hidden" name="id" value={movie.id} />
+
+        {/* TitlE */}
+
+        <div>
+          <label htmlFor="title" className="block text-sm mb-1">
+            Title
+          </label>
+          <input
+            id="title"
+            name="title"
+            defaultValue={movie.title}
+            className="w-full border p-2"
+            required
+          />
         </div>
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-2">{movie.title}</h1>
-          <p className="text-gray-700 mb-4">{movie.description}</p>
-          <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-green-600">
-              ${movie.price.toFixed(2)}
-            </span>
-            <span className="text-gray-600">
-              {new Date(movie.releaseDate).toLocaleDateString()}
-            </span>
+
+        {/* DescriptioN */}
+
+        <div>
+          <label htmlFor="description" className="block text-sm mb-1">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            defaultValue={movie.description}
+            className="w-full border p-2"
+            rows={4}
+          />
+        </div>
+
+        {/* ReleasE date & RuntimE */}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="releaseDate" className="block text-sm mb-1">
+              Release date
+            </label>
+            <input
+              id="releaseDate"
+              type="date"
+              name="releaseDate"
+              defaultValue={movie.releaseDate.toISOString().split("T")[0]}
+              className="border p-2 w-full"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="runtime" className="block text-sm mb-1">
+              Runtime (min)
+            </label>
+            <input
+              id="runtime"
+              type="number"
+              name="runtime"
+              placeholder="Minutes"
+              defaultValue={movie.runtime ?? ""}
+              className="border p-2 w-full"
+            />
           </div>
         </div>
-      </div>
+
+        {/* PricE & StocK */}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="price" className="block text-sm mb-1">
+              Price
+            </label>
+            <input
+              id="price"
+              type="number"
+              name="price"
+              placeholder="Price"
+              defaultValue={movie.price}
+              className="border p-2 w-full"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="stock" className="block text-sm mb-1">
+              Stock
+            </label>
+            <input
+              id="stock"
+              type="number"
+              name="stock"
+              placeholder="Stock quantity"
+              defaultValue={movie.stock}
+              className="border p-2 w-full"
+            />
+          </div>
+        </div>
+
+        {/* ImagE URL */}
+
+        <div>
+          <label htmlFor="imageUrl" className="block text-sm mb-1">
+            Image URL
+          </label>
+          <input
+            id="imageUrl"
+            name="imageUrl"
+            placeholder="https://…"
+            defaultValue={movie.imageUrl}
+            className="w-full border p-2"
+          />
+        </div>
+
+        {/* GenreS */}
+
+        <fieldset>
+          <legend className="text-sm font-medium mb-2">Genres</legend>
+
+          <div className="grid grid-cols-2 gap-2">
+            {allGenres.map((genre) => (
+              <label
+                key={genre.id}
+                htmlFor={`genre-${genre.id}`}
+                className="flex gap-2 items-center"
+              >
+                <input
+                  id={`genre-${genre.id}`}
+                  type="checkbox"
+                  name="genreIds"
+                  value={genre.id}
+                  defaultChecked={movie.genres.some((g) => g.id === genre.id)}
+                />
+                {genre.name}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        {/* CreditS (READ-ONLY FOR NOW) */}
+
+        <fieldset>
+          <legend className="text-sm font-medium mb-2">Credits</legend>
+
+          {movie.moviePersons.map((mp) => (
+            <div key={mp.id} className="flex gap-2 mb-2">
+              <input
+                disabled
+                value={mp.name}
+                className="border p-2 bg-slate-100 flex-1"
+                placeholder="Name"
+              />
+              <input
+                disabled
+                value={mp.role}
+                className="border p-2 bg-slate-100 flex-1"
+                placeholder="Role"
+              />
+            </div>
+          ))}
+        </fieldset>
+
+        {/* SubmiT */}
+
+        <div className="pt-4">
+          <button type="submit" className="bg-emerald-600 text-white px-6 py-2">
+            Save changes
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
