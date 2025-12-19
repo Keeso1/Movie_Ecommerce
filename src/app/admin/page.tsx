@@ -1,4 +1,4 @@
-import { auth } from '@/app/lib/auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/app/lib/prisma';
 
 export default async function AdminDashboard() {
