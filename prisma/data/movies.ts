@@ -384,30 +384,6 @@ export const movies: MovieSeed[] = [
     },
   },
 
-  //  Movie nr. 14  //
-
-  {
-    title: "Parasite",
-    description:
-      "A poor family infiltrates a wealthy household, setting off a genre-defying chain of events driven by class tension and social inequality.",
-    price: 11990,
-    releaseDate: new Date("2019-05-30"),
-    imageUrl: "https://example.com/parasite.jpg",
-    runtime: 132,
-    genres: {
-      connectOrCreate: [
-        { where: { name: "Thriller" }, create: { name: "Thriller" } },
-        { where: { name: "Satire" }, create: { name: "Satire" } },
-      ],
-    },
-    people: {
-      connectOrCreate: [
-        { where: { name: "Bong Joon-ho" }, create: { name: "Bong Joon-ho" } },
-        { where: { name: "Song Kang-ho" }, create: { name: "Song Kang-ho" } },
-      ],
-    },
-  },
-
   //   Movie nr. 15  //
 
   {
