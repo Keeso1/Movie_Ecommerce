@@ -40,13 +40,15 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
         </div>
 
         <div className="p-4">
+          {movie.runtime !== null && <span>{movie.runtime} min</span>}
           <h3 className="text-lg font-semibold truncate">{movie.title}</h3>
-
+          <p>{movie.genres.map((genre) => genre.name).join(" • ")}</p>
           {movie.price !== null && (
-            <p className="mt-2 text-green-600 font-semibold">
-              ${movie.price.toFixed(2)}
-            </p>
-          )}
+          <div className="flex flex-row justify-between mt-4 text-green-600 font-semibold">
+            <p>${movie.price.toFixed(2)}</p>
+            <p>{movie.stock} in stock</p>
+          </div>
+        )}
         </div>
       </Link>
 
