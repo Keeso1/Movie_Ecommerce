@@ -1,6 +1,6 @@
 //          { UPDATE page for the Admin to edit & update movie details }
 
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { updateMovie } from "../movie_update";
 import { notFound } from "next/navigation";
 
