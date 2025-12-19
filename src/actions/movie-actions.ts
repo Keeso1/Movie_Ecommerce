@@ -10,7 +10,7 @@ type sortingOptions = "recent" | "oldest" | "price" | "popularity";
 export const getMovies = async (
   sort: sortingOptions,
   genre?: string,
-  search?: string,
+  search?: string
 ) => {
   const whereClause: MovieWhereInput = {
     AND: [
@@ -70,7 +70,7 @@ export const getMovies = async (
     },
     orderBy: orderByClause,
   });
-  return movies.map((movie) => ({ ...movie, price: movie.price.toNumber() }));
+  return movies.map((movie) => ({ ...movie, price: movie.price }));
 };
 
 export const getMovieById = async (id: string) => {
