@@ -100,9 +100,11 @@ export default function CartPage() {
           <p className="text-xl font-bold">
             Total: ${getTotalPrice().toFixed(2)}
           </p>
+          <Link href="/checkout">
           <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded">
             Checkout
           </button>
+          </Link>
         </div>
       </div>
     </div>
