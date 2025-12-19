@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth';
-import { prisma } from '@/app/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export default async function AdminDashboard() {
     const session = await auth.getSession();
