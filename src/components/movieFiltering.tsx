@@ -60,7 +60,7 @@ export default function MovieFilter({
       <Combobox
         options={genresArr}
         value={values ? values.genre : undefined}
-        onValueChange={(newValue) => {
+        onValueChangeAction={(newValue) => {
           router.push(path + "?" + createQueryString("genre", newValue));
         }}
       ></Combobox>
