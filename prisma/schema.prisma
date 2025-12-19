@@ -170,10 +170,10 @@ model Order {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   status            String
-  userId            String
+  userId            String?
   shippingAddressId String
 
-  user            User        @relation(fields: [userId], references: [id])
+  user            User?        @relation(fields: [userId], references: [id])
   shippingAddress Address     @relation(fields: [shippingAddressId], references: [id])
   items           OrderItem[]
 
