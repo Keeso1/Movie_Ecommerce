@@ -7,10 +7,11 @@ import { notFound } from "next/navigation";
 export default async function AdminEditMoviePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const movie = await prisma.movie.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       genres: true,
       moviePersons: true,
