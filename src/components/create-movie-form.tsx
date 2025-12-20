@@ -19,6 +19,7 @@ import { getActors } from "@/actions/create-movie-actions";
 import MultipleSelector from "@/components/ui/multi-select";
 import { Controller } from "react-hook-form";
 import { FieldDescription } from "@/components/ui/field";
+
 const actorsArray = getActors.map((person) => ({
   value: person.id,
   label: person.name,
