@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import type { Prisma } from 'generated/prisma/client' // ✅ only for types
+import type { Prisma } from 'generated/prisma/client' //  only for types
 
 // Simple payment simulator: waits ms and fails ~10% of the time
 async function simulatePayment(amount: number, ms = 1500) {
@@ -34,7 +34,7 @@ export type CheckoutInput = {
  * Creates an order and returns its ID
  */
 export async function createOrder(data: CheckoutInput) {
-  // ✅ Only use cookies, no headers needed for manual headers object
+  //  Only use cookies, no headers needed for manual headers object
   const session = await auth.api.getSession({
     headers: await headers() // automatically includes cookies
   })
@@ -44,7 +44,7 @@ export async function createOrder(data: CheckoutInput) {
     throw new Error('Not authenticated')
   } */
 
-  // 💳 simulate payment (may throw)
+  //  simulate payment (may throw)
   await simulatePayment(data.total)
 
   const userConnect = session?.user?.id
