@@ -35,8 +35,10 @@ type createMovieFormData = z.infer<typeof schema>;
 
 export default function CreateMovieForm({
   actors,
+  directors,
 }: {
   actors: { value: string; label: string }[];
+  directors: { value: string; label: string }[];
 }) {
   // const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -154,7 +156,31 @@ export default function CreateMovieForm({
               <MultiSelect
                 options={actors}
                 onValueChange={field.onChange}
-                placeholder="Select technologies..."
+                placeholder="Select actors..."
+                variant="secondary"
+              />
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="moviePersons"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field orientation="responsive" data-invalid={fieldState.invalid}>
+              <FieldContent>
+                <FieldLabel htmlFor="directors-dropdown">Directors</FieldLabel>
+                <FieldDescription>
+                  Which directors worked on this movie?
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </FieldContent>
+              <MultiSelect
+                options={directors}
+                onValueChange={field.onChange}
+                placeholder="Select directors..."
                 variant="secondary"
               />
             </Field>

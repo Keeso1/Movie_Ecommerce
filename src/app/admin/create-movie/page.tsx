@@ -1,23 +1,31 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 import CreateMovieForm from "@/components/create-movie-form";
-import { getActors } from "@/actions/create-movie-actions";
+import { getActors, getDirectors } from "@/actions/create-movie-actions";
 import { useEffect, useState } from "react";
 
 export default function CreateMoviePage() {
   const session = authClient.useSession();
   const [actors, setActors] = useState<{ value: string; label: string }[]>([]);
+  const [directors, setDirectors] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchActors = async () => {
+    const fetchMoviePerson = async (role: string) => {
       try {
-        const actorsData = await getActors();
-        const formattedActors = actorsData.map((person) => ({
+        const moviePersonData =
+          role == "actor" ? await getActors() : await getDirectors();
+        const formattedMoviePersons = moviePersonData.map((person) => ({
           value: person.id,
           label: person.name,
         }));
-        setActors(formattedActors);
+        if (role == "actor") {
+          setActors(formattedMoviePersons);
+        } else if (role == "director") {
+          setDirectors(formattedMoviePersons);
+        }
       } catch (error) {
         console.error("Failed to fetch actors:", error);
         // Optionally, handle the error state in the UI
@@ -26,7 +34,8 @@ export default function CreateMoviePage() {
       }
     };
 
-    fetchActors();
+    fetchMoviePerson("actor");
+    fetchMoviePerson("director");
   }, []); // Empty dependency array ensures this runs once on mount
 
   if (session.data?.user.role !== "admin") {
@@ -41,5 +50,7 @@ export default function CreateMoviePage() {
     return <div>Loading form...</div>;
   }
 
-  return <CreateMovieForm actors={actors}></CreateMovieForm>;
+  return (
+    <CreateMovieForm actors={actors} directors={directors}></CreateMovieForm>
+  );
 }
