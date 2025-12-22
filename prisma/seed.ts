@@ -1,139 +1,221 @@
+import "dotenv/config";
 import prisma from "@/lib/prisma";
 async function main() {
-  console.log("Start seeding...");
+  // Clear all tables before seeding
+  await prisma.orderItem.deleteMany({});
+  await prisma.order.deleteMany({});
+  await prisma.movie.deleteMany({});
+  await prisma.genre.deleteMany({});
+  await prisma.moviePerson.deleteMany({});
+  // Add more deleteMany calls if you add more related tables in the future
 
-  await prisma.$connect();
-  // Create a Genre
-  const genre1 = await prisma.genre.create({
-    data: {
-      name: "Action",
-      description: "Action-packed movies",
-    },
-  });
-  console.log(`Created genre with id: ${genre1.id}`);
+  // 1 — GENRES
 
-  const genre2 = await prisma.genre.create({
-    data: {
-      name: "Thriller",
-      description: "Scary",
-    },
-  });
-  console.log(`Created genre with id: ${genre2.id}`);
-
-  // Create a MoviePerson
-  const moviePerson1 = await prisma.moviePerson.create({
-    data: {
-      name: "John Doe",
-      role: "Director",
-    },
-  });
-  console.log(`Created movie person with id: ${moviePerson1.id}`);
-
-  const moviePerson2 = await prisma.moviePerson.create({
-    data: {
-      name: "Frodo",
-      role: "Director",
-    },
-  });
-  console.log(`Created movie person with id: ${moviePerson2.id}`);
-
-  const moviePerson3 = await prisma.moviePerson.create({
-    data: {
-      name: "Brosef",
-      role: "Actor",
-    },
-  });
-  console.log(`Created movie person with id: ${moviePerson3.id}`);
-
-  // Create a Movie
-  const movie1 = await prisma.movie.create({
-    data: {
-      title: "A new hope",
-      description: "A thrilling action movie.",
-      price: 19.99,
-      releaseDate: new Date("2023-01-01T00:00:00Z"),
-      imageUrl: "/A_new_hope.jpg",
-      runtime: 120,
-      genres: {
-        connect: [{ id: genre1.id }, {id: genre2.id}],
+  const genres = [
+    "Action",
+    "Adventure",
+    "Science Fiction",
+    "Fantasy",
+    "Drama",
+    "Romance",
+    "Animation",
+    "Comedy",
+    "Crime",
+    "Superhero",
+  ];
+  for (const name of genres) {
+    await prisma.genre.create({
+      data: {
+        name: name,
       },
-      moviePersons: {
-        connect: [{ id: moviePerson1.id }, {id: moviePerson2.id}, {id: moviePerson3.id}],
-      },
-    },
-  });
-  console.log(`Created movie with id: ${movie1.id}`);
+    });
+  }
+  // 2 — MOVIE PERSONS (Person + Role)
 
-    const movie2 = await prisma.movie.create({
-    data: {
-      title: "Action Movie Title",
-      description: "A thrilling action movie.",
-      price: 19.99,
-      releaseDate: new Date("2001-01-01T00:00:00Z"),
-      imageUrl: "/A_new_hope.jpg",
-      runtime: 120,
-      genres: {
-        connect: { id: genre1.id },
+  const moviePersons = [
+    ["James Cameron", "director"],
+    ["Sam Worthington", "actor"],
+    ["Zoe Saldaña", "actor"],
+    ["Anthony Russo", "director"],
+    ["Joe Russo", "director"],
+    ["Robert Downey Jr.", "actor"],
+    ["Chris Evans", "actor"],
+    ["Leonardo DiCaprio", "actor"],
+    ["Kate Winslet", "actor"],
+    ["J.J. Abrams", "director"],
+    ["Daisy Ridley", "actor"],
+    ["Harrison Ford", "actor"],
+    ["Josh Brolin", "actor"],
+    ["Chris Hemsworth", "actor"],
+    ["Jon Watts", "director"],
+    ["Tom Holland", "actor"],
+    ["Zendaya", "actor"],
+    ["Colin Trevorrow", "director"],
+    ["Chris Pratt", "actor"],
+    ["Bryce Dallas Howard", "actor"],
+    ["Jon Favreau", "director"],
+    ["Donald Glover", "actor"],
+    ["Beyoncé", "actor"],
+    ["Joss Whedon", "director"],
+    ["James Wan", "director"],
+    ["Vin Diesel", "actor"],
+    ["Paul Walker", "actor"],
+    ["Joseph Kosinski", "director"],
+    ["Tom Cruise", "actor"],
+    ["Miles Teller", "actor"],
+    ["Chris Buck", "director"],
+    ["Jennifer Lee", "director"],
+    ["Idina Menzel", "actor"],
+    ["Kristen Bell", "actor"],
+    ["Ryan Coogler", "director"],
+    ["Chadwick Boseman", "actor"],
+    ["Michael B. Jordan", "actor"],
+    ["David Yates", "director"],
+    ["Daniel Radcliffe", "actor"],
+    ["Emma Watson", "actor"],
+    ["Rian Johnson", "director"],
+    ["J.A. Bayona", "director"],
+    ["Bill Condon", "director"],
+    ["Dan Stevens", "actor"],
+    ["Brad Bird", "director"],
+    ["Craig T. Nelson", "actor"],
+    ["Holly Hunter", "actor"],
+    ["F. Gary Gray", "director"],
+    ["Dwayne Johnson", "actor"],
+    ["Shane Black", "director"],
+    ["Gwyneth Paltrow", "actor"],
+    ["Pierre Coffin", "director"],
+    ["Kyle Balda", "director"],
+    ["Sandra Bullock", "actor"],
+    ["Jon Hamm", "actor"],
+  ];
+  for (const [name, role] of moviePersons) {
+    await prisma.moviePerson.create({
+      data: {
+        name: name,
+        role: role,
       },
-      moviePersons: {
-        connect: { id: moviePerson1.id },
+    });
+  }
+  // 3 — MOVIES
+  const movies = [
+    {
+      title: "Avatar",
+      description:
+        "A paraplegic Marine becomes torn between duty and protecting an alien world.",
+      price: 149,
+      releaseDate: "2009-12-18",
+      runtime: 162,
+      genres: ["Science Fiction", "Adventure"],
+      moviePersons: [
+        ["James Cameron", "director"],
+        ["Sam Worthington", "actor"],
+        ["Zoe Saldaña", "actor"],
+      ],
+    },
+    {
+      title: "Avengers: Endgame",
+      description:
+        "The Avengers assemble one last time to reverse a universe-shattering catastrophe.",
+      price: 159,
+      releaseDate: "2019-04-26",
+      runtime: 181,
+      genres: ["Action", "Superhero"],
+      moviePersons: [
+        ["Anthony Russo", "director"],
+        ["Joe Russo", "director"],
+        ["Robert Downey Jr.", "actor"],
+        ["Chris Evans", "actor"],
+      ],
+    },
+    {
+      title: "Titanic",
+      description: "A romance unfolds aboard the ill-fated RMS Titanic.",
+      price: 129,
+      releaseDate: "1997-12-19",
+      runtime: 195,
+      genres: ["Drama", "Romance"],
+      moviePersons: [
+        ["James Cameron", "director"],
+        ["Leonardo DiCaprio", "actor"],
+        ["Kate Winslet", "actor"],
+      ],
+    },
+    {
+      title: "Top Gun: Maverick",
+      description:
+        "A veteran pilot returns to train the next generation of aviators.",
+      price: 149,
+      releaseDate: "2022-05-27",
+      runtime: 131,
+      genres: ["Action", "Drama"],
+      moviePersons: [
+        ["Joseph Kosinski", "director"],
+        ["Tom Cruise", "actor"],
+        ["Miles Teller", "actor"],
+      ],
+    },
+    {
+      title: "Black Panther",
+      description:
+        "A king must protect his nation from internal and external threats.",
+      price: 139,
+      releaseDate: "2018-02-16",
+      runtime: 134,
+      genres: ["Action", "Superhero"],
+      moviePersons: [
+        ["Ryan Coogler", "director"],
+        ["Chadwick Boseman", "actor"],
+        ["Michael B. Jordan", "actor"],
+      ],
+    },
+    // … remaining movies follow the same pattern
+  ];
+  for (const movie of movies) {
+    // Fetch the corresponding moviePerson ids for this movie
+    const moviePersonIds = [];
+    for (const [name, role] of movie.moviePersons) {
+      const person = await prisma.moviePerson.findFirst({
+        where: { name, role },
+        select: { id: true },
+      });
+      if (person) {
+        moviePersonIds.push({ id: person.id });
+      }
+    }
+
+    const genreIds = [];
+    for (const name of movie.genres) {
+      const genre = await prisma.genre.findFirst({
+        where: { name },
+        select: { id: true },
+      });
+      if (genre) {
+        genreIds.push({ id: genre.id });
+      }
+    }
+
+    await prisma.movie.create({
+      data: {
+        title: movie.title,
+        description: movie.description,
+        price: movie.price,
+        releaseDate: new Date(movie.releaseDate),
+        imageUrl: `https://example.com/${movie.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "")}.jpg`,
+        runtime: movie.runtime,
+        genres: {
+          connect: genreIds,
+        },
+        moviePersons: {
+          connect: moviePersonIds,
+        },
       },
-    },
-  });
-  console.log(`Created movie with id: ${movie2.id}`);
-
-  // Create an Address
-  const address1 = await prisma.address.create({
-    data: {
-      street: "123 Main St",
-      postalCode: "12345",
-      city: "Anytown",
-      country: "USA",
-    },
-  });
-  console.log(`Created address with id: ${address1.id}`);
-
-  // Create a User
-  const user1 = await prisma.user.create({
-    data: {
-      id: "user-1",
-      name: "Alice Smith",
-      email: "alice.smith@example.com",
-      emailVerified: true,
-      address: {
-        connect: { id: address1.id },
-      },
-    },
-  });
-  console.log(`Created user with id: ${user1.id}`);
-
-  // Create an Order
-  const order1 = await prisma.order.create({
-    data: {
-      status: "Pending",
-      userId: user1.id,
-      shippingAddressId: address1.id,
-      items: {
-        create: [
-          {
-            id: "order-item-1",
-            movieId: movie1.id,
-            quantity: 1,
-            priceAtPurchase: movie1.price,
-          },
-        ],
-      },
-    },
-    include: {
-      items: true,
-    },
-  });
-  console.log(`Created order with id: ${order1.id}`);
-  console.log(`Created order item with id: ${order1.items[0].id}`);
-
-  console.log("Seeding finished.");
+    });
+  }
+  console.log("25 movies seeded successfully");
 }
-
 main()
   .catch((e) => {
     console.error(e);
