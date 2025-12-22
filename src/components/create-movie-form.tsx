@@ -10,14 +10,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 // import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getActors } from "@/actions/create-movie-actions";
+// import { useRouter } from "next/navigation";
 // import MultipleSelectDemo from "@/components/ui/select-32";
 // import { getMoviePersons } from "@/actions/create-movie-actions";
-import MultipleSelector from "@/components/ui/multi-select";
+import { MultiSelect } from "./multi-select";
 import { Controller } from "react-hook-form";
 import { FieldDescription } from "@/components/ui/field";
+import { useState } from "react";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -34,24 +33,15 @@ const schema = z.object({
 
 type createMovieFormData = z.infer<typeof schema>;
 
-export default function CreateMovieForm() {
-  const router = useRouter();
+export default function CreateMovieForm({
+  actors,
+}: {
+  actors: { value: string; label: string }[];
+}) {
+  // const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   // const [isAuthorised, setIsAuthorised] = useState(false)
-  const [actors, setActors] = useState<{ value: string; label: string }[]>([]);
-
-  useEffect(() => {
-    const fetchActors = async () => {
-      const actorsData = await getActors();
-      const formattedActors = actorsData.map((person) => ({
-        value: person.id,
-        label: person.name,
-      }));
-      setActors(formattedActors);
-    };
-    fetchActors();
-  }, []);
-
+  console.log(actors);
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -161,11 +151,12 @@ export default function CreateMovieForm() {
                   <FieldError errors={[fieldState.error]} />
                 )}
               </FieldContent>
-              <MultipleSelector
+              <MultiSelect
                 options={actors}
-                value={field.value}
-                onChange={field.onChange}
-              ></MultipleSelector>
+                onValueChange={field.onChange}
+                placeholder="Select technologies..."
+                variant="secondary"
+              />
             </Field>
           )}
         />
