@@ -1,5 +1,4 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
 import z from "zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,17 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 // import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getActors } from "@/actions/create-movie-actions";
 // import MultipleSelectDemo from "@/components/ui/select-32";
 // import { getMoviePersons } from "@/actions/create-movie-actions";
 import MultipleSelector from "@/components/ui/multi-select";
 import { Controller } from "react-hook-form";
 import { FieldDescription } from "@/components/ui/field";
-const actorsArray = getActors.map((person) => ({
-  value: person.id,
-  label: person.name,
-}));
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -42,15 +37,20 @@ type createMovieFormData = z.infer<typeof schema>;
 export default function CreateMovieForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const session = authClient.useSession();
   // const [isAuthorised, setIsAuthorised] = useState(false)
-  const [actors, setActors] =
-    useState<{ value: string; label: string }[]>(actorsArray);
+  const [actors, setActors] = useState<{ value: string; label: string }[]>([]);
 
-  if (session.data?.user.role !== "admin") {
-    router.push("/");
-    // setIsAuthorised(true)name
-  }
+  useEffect(() => {
+    const fetchActors = async () => {
+      const actorsData = await getActors();
+      const formattedActors = actorsData.map((person) => ({
+        value: person.id,
+        label: person.name,
+      }));
+      setActors(formattedActors);
+    };
+    fetchActors();
+  }, []);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -153,11 +153,9 @@ export default function CreateMovieForm() {
           render={({ field, fieldState }) => (
             <Field orientation="responsive" data-invalid={fieldState.invalid}>
               <FieldContent>
-                <FieldLabel htmlFor="form-rhf-select-language">
-                  Spoken Language
-                </FieldLabel>
+                <FieldLabel htmlFor="directors-dropdown">Actors</FieldLabel>
                 <FieldDescription>
-                  For best results, select the language you speak.
+                  Which actors worked on this movie?
                 </FieldDescription>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

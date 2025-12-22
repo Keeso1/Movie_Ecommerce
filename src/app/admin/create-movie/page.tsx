@@ -1,3 +1,4 @@
+"use client";
 import { authClient } from "@/lib/auth-client";
 import CreateMovieForm from "@/components/create-movie-form";
 
