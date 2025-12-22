@@ -1,5 +1,6 @@
 import "dotenv/config";
 import prisma from "@/lib/prisma";
+import { getPosterUrl } from "@/app/api/get_movie_poster";
 async function main() {
   // Clear all tables before seeding
   await prisma.orderItem.deleteMany({});
@@ -201,9 +202,7 @@ async function main() {
         description: movie.description,
         price: movie.price,
         releaseDate: new Date(movie.releaseDate),
-        imageUrl: `https://example.com/${movie.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "")}.jpg`,
+        imageUrl: await getPosterUrl(movie.title),
         runtime: movie.runtime,
         genres: {
           connect: genreIds,
@@ -213,6 +212,7 @@ async function main() {
         },
       },
     });
+    console.log(`Seeded: ${movie.title}`);
   }
   console.log("25 movies seeded successfully");
 }
