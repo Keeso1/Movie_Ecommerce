@@ -34,6 +34,7 @@ async function main() {
   // 2 — MOVIE PERSONS (Person + Role)
 
   const moviePersons = [
+    ["Mark Hamill", "actor"],
     ["James Cameron", "director"],
     ["Sam Worthington", "actor"],
     ["Zoe Saldaña", "actor"],

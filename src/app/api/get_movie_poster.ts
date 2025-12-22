@@ -5,8 +5,8 @@ const apiKey = process.env.TMDB_API_KEY2;
 export async function getPosterUrl(query: string) {
   const res = await fetch(
     `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(
-      query
-    )}`
+      query,
+    )}`,
   );
   const data = await res.json();
   if (data.results && data.results.length > 0) {
@@ -16,6 +16,6 @@ export async function getPosterUrl(query: string) {
     return posterUrl;
   } else {
     console.log("No results found.");
-    return null;
+    return undefined;
   }
 }
