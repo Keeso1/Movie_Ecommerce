@@ -33,9 +33,13 @@ export default async function Home(props: PageProps<"/">) {
         <p className="max-w-md text-lg text align-middleleading-8 text-zinc-600 dark:text-zinc-400">
           Movie Card Component
         </p>
+        <h2>Recent movies</h2>
         <MovieCardContainer movies={recentMovies}></MovieCardContainer>
+        <h2>Popular Movies</h2>
         <MovieCardContainer movies={popularMovies}></MovieCardContainer>
+        <h2>Oldest Movies</h2>
         <MovieCardContainer movies={oldestMovies}></MovieCardContainer>
+        <h2>Oldest Movies</h2>
         <MovieCardContainer movies={cheapestMovies}></MovieCardContainer>
       </div>
     </div>

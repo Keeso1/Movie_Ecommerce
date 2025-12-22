@@ -3,6 +3,17 @@ async function main() {
   console.log("Start seeding...");
 
   await prisma.$connect();
+
+  console.log("Clearing existing data...");
+  await prisma.orderItem.deleteMany({});
+  await prisma.order.deleteMany({});
+  await prisma.movie.deleteMany({});
+  await prisma.user.deleteMany({});
+  await prisma.genre.deleteMany({});
+  await prisma.moviePerson.deleteMany({});
+  await prisma.address.deleteMany({});
+  console.log("Existing data cleared.");
+
   // Create a Genre
   const genre1 = await prisma.genre.create({
     data: {
@@ -24,7 +35,7 @@ async function main() {
   const moviePerson1 = await prisma.moviePerson.create({
     data: {
       name: "John Doe",
-      role: "Director",
+      role: "director",
     },
   });
   console.log(`Created movie person with id: ${moviePerson1.id}`);
@@ -32,7 +43,7 @@ async function main() {
   const moviePerson2 = await prisma.moviePerson.create({
     data: {
       name: "Frodo",
-      role: "Director",
+      role: "director",
     },
   });
   console.log(`Created movie person with id: ${moviePerson2.id}`);
@@ -40,7 +51,7 @@ async function main() {
   const moviePerson3 = await prisma.moviePerson.create({
     data: {
       name: "Brosef",
-      role: "Actor",
+      role: "actor",
     },
   });
   console.log(`Created movie person with id: ${moviePerson3.id}`);
@@ -55,16 +66,20 @@ async function main() {
       imageUrl: "/A_new_hope.jpg",
       runtime: 120,
       genres: {
-        connect: [{ id: genre1.id }, {id: genre2.id}],
+        connect: [{ id: genre1.id }, { id: genre2.id }],
       },
       moviePersons: {
-        connect: [{ id: moviePerson1.id }, {id: moviePerson2.id}, {id: moviePerson3.id}],
+        connect: [
+          { id: moviePerson1.id },
+          { id: moviePerson2.id },
+          { id: moviePerson3.id },
+        ],
       },
     },
   });
   console.log(`Created movie with id: ${movie1.id}`);
 
-    const movie2 = await prisma.movie.create({
+  const movie2 = await prisma.movie.create({
     data: {
       title: "Action Movie Title",
       description: "A thrilling action movie.",
