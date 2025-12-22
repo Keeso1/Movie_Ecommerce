@@ -16,6 +16,6 @@ export async function getPosterUrl(query: string) {
     return posterUrl;
   } else {
     console.log("No results found.");
-    return "https://image.tmdb.org/t/p/";
+    return null;
   }
 }
