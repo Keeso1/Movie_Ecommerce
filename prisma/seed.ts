@@ -249,7 +249,7 @@ async function main() {
       releaseDate: "2019-07-19",
       runtime: 118,
       genres: ["Animation", "Drama"],
-      moviePerson: [
+      moviePersons: [
         ["Jon Favreau", "director"],
         ["Donald Glover", "actor"],
         ["Beyoncé", "actor"],
@@ -262,7 +262,7 @@ async function main() {
       releaseDate: "2012-05-04",
       runtime: 143,
       genres: ["Action", "Superhero"],
-      moviePerson: [
+      moviePersons: [
         ["Joss Whedon", "director"],
         ["Robert Downey Jr.", "actor"],
         ["Chris Evans", "actor"],
@@ -276,7 +276,7 @@ async function main() {
       releaseDate: "2015-04-03",
       runtime: 137,
       genres: ["Action", "Crime"],
-      moviePerson: [
+      moviePersons: [
         ["James Wan", "director"],
         ["Vin Diesel", "actor"],
         ["Paul Walker", "actor"],
@@ -290,7 +290,7 @@ async function main() {
       releaseDate: "2019-11-22",
       runtime: 103,
       genres: ["Animation", "Fantasy"],
-      moviePerson: [
+      moviePersons: [
         ["Chris Buck", "director"],
         ["Jennifer Lee", "director"],
         ["Idina Menzel", "actor"],
@@ -305,7 +305,7 @@ async function main() {
       releaseDate: "2015-05-01",
       runtime: 141,
       genres: ["Action", "Superhero"],
-      moviePerson: [
+      moviePersons: [
         ["Joss Whedon", "director"],
         ["Robert Downey Jr.", "actor"],
         ["Chris Evans", "actor"],
@@ -319,7 +319,7 @@ async function main() {
       releaseDate: "2011-07-15",
       runtime: 130,
       genres: ["Fantasy", "Adventure"],
-      moviePerson: [
+      moviePersons: [
         ["David Yates", "director"],
         ["Daniel Radcliffe", "actor"],
         ["Emma Watson", "actor"],
@@ -333,7 +333,7 @@ async function main() {
       releaseDate: "2017-12-15",
       runtime: 152,
       genres: ["Science Fiction", "Fantasy"],
-      moviePerson: [
+      moviePersons: [
         ["Rian Johnson", "director"],
         ["Mark Hamill", "actor"],
         ["Daisy Ridley", "actor"],
@@ -347,7 +347,7 @@ async function main() {
       releaseDate: "2018-06-22",
       runtime: 128,
       genres: ["Adventure", "Science Fiction"],
-      moviePerson: [
+      moviePersons: [
         ["J.A. Bayona", "director"],
         ["Chris Pratt", "actor"],
         ["Bryce Dallas Howard", "actor"],
@@ -361,7 +361,7 @@ async function main() {
       releaseDate: "2013-11-27",
       runtime: 102,
       genres: ["Animation", "Fantasy"],
-      moviePerson: [
+      moviePersons: [
         ["Chris Buck", "director"],
         ["Jennifer Lee", "director"],
         ["Kristen Bell", "actor"],
@@ -376,7 +376,7 @@ async function main() {
       releaseDate: "2017-03-17",
       runtime: 129,
       genres: ["Fantasy", "Romance"],
-      moviePerson: [
+      moviePersons: [
         ["Bill Condon", "director"],
         ["Emma Watson", "actor"],
         ["Dan Stevens", "actor"],
@@ -390,7 +390,7 @@ async function main() {
       releaseDate: "2018-06-15",
       runtime: 118,
       genres: ["Animation", "Action"],
-      moviePerson: [
+      moviePersons: [
         ["Brad Bird", "director"],
         ["Craig T. Nelson", "actor"],
         ["Holly Hunter", "actor"],
@@ -404,7 +404,7 @@ async function main() {
       releaseDate: "2017-04-14",
       runtime: 136,
       genres: ["Action", "Crime"],
-      moviePerson: [
+      moviePersons: [
         ["F. Gary Gray", "director"],
         ["Vin Diesel", "actor"],
         ["Dwayne Johnson", "actor"],
@@ -418,7 +418,7 @@ async function main() {
       releaseDate: "2013-05-03",
       runtime: 130,
       genres: ["Action", "Superhero"],
-      moviePerson: [
+      moviePersons: [
         ["Shane Black", "director"],
         ["Robert Downey Jr.", "actor"],
         ["Gwyneth Paltrow", "actor"],
@@ -432,7 +432,7 @@ async function main() {
       releaseDate: "2015-07-10",
       runtime: 91,
       genres: ["Animation", "Comedy"],
-      moviePerson: [
+      moviePersons: [
         ["Pierre Coffin", "director"],
         ["Kyle Balda", "director"],
         ["Sandra Bullock", "actor"],
@@ -447,7 +447,7 @@ async function main() {
       releaseDate: "2016-05-06",
       runtime: 147,
       genres: ["Action", "Superhero"],
-      moviePerson: [
+      moviePersons: [
         ["Anthony Russo", "director"],
         ["Joe Russo", "director"],
         ["Chris Evans", "actor"],
