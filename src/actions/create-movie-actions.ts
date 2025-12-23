@@ -1,17 +1,18 @@
+"use server"
 import prisma from "@/lib/prisma";
 
-export const getActors = await prisma.moviePerson.findMany({
-  where: {
-    role: {
-      contains: "actor",
+export async function getActors() {
+  return await prisma.moviePerson.findMany({
+    where: {
+      role: "actor",
     },
-  },
-});
+  });
+}
 
-export const getDirectors = await prisma.moviePerson.findMany({
-  where: {
-    role: {
-      contains: "director",
+export async function getDirectors() {
+  return await prisma.moviePerson.findMany({
+    where: {
+      role: "director",
     },
-  },
-});
+  });
+}
