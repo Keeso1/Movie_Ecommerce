@@ -8,18 +8,18 @@ interface OrderSuccessPageProps {
 }
 
 export default async function OrderSuccessPage({ params }: OrderSuccessPageProps) {
-  // ✅ Guard against missing or empty param
+  //Guard against missing or empty param
   const orderId = params?.id?.trim()
   if (!orderId) {
     return <p>Invalid order ID</p>
   }
 
-  // ✅ Support numeric or string IDs
+  // Support numeric or string IDs
   const where = /^\d+$/.test(orderId)
     ? { id: parseInt(orderId, 10) }
     : { id: orderId } as Prisma.OrderWhereUniqueInput
 
-  // ✅ Fetch order from Prisma
+  // Fetch order from Prisma
   const order = await prisma.order.findUnique({
     where,
     include: {
@@ -30,7 +30,7 @@ export default async function OrderSuccessPage({ params }: OrderSuccessPageProps
 
   if (!order) return <p>Order not found</p>
 
-  // ✅ Calculate total safely
+  //  Calculate total safely
   const total = order.items?.reduce(
     (sum, item) => sum + (item.movie?.price ?? 0) * item.quantity,
     0
