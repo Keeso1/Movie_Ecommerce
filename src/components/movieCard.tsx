@@ -12,16 +12,16 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
     addToCart({
       id: movie.id,
       title: movie.title,
-      price: movie.price ?? 0,
+      price: movie.price ?? 0, // Ensure price defaults to 0 if missing
       quantity: 1,
-      imageUrl: movie.imageUrl ?? "",
+      imageUrl: movie.imageUrl ?? "", // Default to empty string if no image
     });
   };
 
   return (
     <div className="flex flex-col bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
       
-      {/* CLICKABLE IMAGE / DETAILS */}
+      {/* CLICKABLE IMAGE / MOVIE DETAILS */}
       <Link href={`/movies/${movie.id}`}>
         <div className="relative bg-gray-200">
           {movie.imageUrl ? (
@@ -33,8 +33,8 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
               className="object-cover"
             />
           ) : (
-            <div className="h-[500px] flex items-center justify-center">
-              No Image
+            <div className="h-[500px] flex items-center justify-center bg-gray-100 text-gray-500">
+              No Image Available
             </div>
           )}
         </div>
@@ -42,7 +42,7 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
         <div className="p-4">
           <h3 className="text-lg font-semibold truncate">{movie.title}</h3>
 
-          {movie.price !== null && (
+          {movie.price !== null && movie.price > 0 && (
             <p className="mt-2 text-green-600 font-semibold">
               ${movie.price.toFixed(2)}
             </p>

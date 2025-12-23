@@ -8,8 +8,7 @@ import { AddressFormData, PaymentFormData } from '@/lib/checkoutSchema';
 // Helper to get current user ID from session
 async function getCurrentUserId() {
   try {
-    // In a real app, you'd get this from your auth session
-    // For now, we'll use a placeholder or get from cookies
+    
     const cookieStore = await cookies();
     // Check if we have a user session cookie
     // This is a simplified version - adapt to your auth system
@@ -52,7 +51,7 @@ export async function createOrder(
       };
     }
     
-    // Get user ID (simplified - replace with your actual auth)
+    
     const userId = await getCurrentUserId();
     console.log('User ID:', userId);
     
