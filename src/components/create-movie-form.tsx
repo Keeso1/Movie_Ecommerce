@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { MultiSelect } from "./multi-select";
 import { Controller } from "react-hook-form";
 import { FieldDescription } from "@/components/ui/field";
-import { useState } from "react";
+import { Suspense, use, useState } from "react";
+import { ControllerRenderProps } from "react-hook-form";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -37,13 +38,14 @@ export default function CreateMovieForm({
   actors,
   directors,
 }: {
-  actors: { value: string; label: string }[];
-  directors: { value: string; label: string }[];
+  actors: Promise<{ value: string; label: string }[]>;
+  directors: Promise<{ value: string; label: string }[]>;
 }) {
   // const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   // const [isAuthorised, setIsAuthorised] = useState(false)
   console.log(actors);
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -58,6 +60,23 @@ export default function CreateMovieForm({
     },
   });
 
+  function MultiSelectWrapper({
+    moviePersons,
+    field,
+  }: {
+    moviePersons: Promise<{ value: string; label: string }[]>;
+    field: ControllerRenderProps<createMovieFormData, "moviePersons">;
+  }) {
+    const moviePerson = use(moviePersons);
+    return (
+      <MultiSelect
+        options={moviePerson}
+        onValueChange={field.onChange}
+        placeholder="Select actors..."
+        variant="secondary"
+      />
+    );
+  }
   const onSubmit = (data: createMovieFormData) => {
     setIsLoading(true);
     console.log(data);
@@ -139,53 +158,49 @@ export default function CreateMovieForm({
           </FieldContent>
         </Field>
 
-        <Controller
-          name="moviePersons"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field orientation="responsive" data-invalid={fieldState.invalid}>
-              <FieldContent>
-                <FieldLabel htmlFor="directors-dropdown">Actors</FieldLabel>
-                <FieldDescription>
-                  Which actors worked on this movie?
-                </FieldDescription>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </FieldContent>
-              <MultiSelect
-                options={actors}
-                onValueChange={field.onChange}
-                placeholder="Select actors..."
-                variant="secondary"
-              />
-            </Field>
-          )}
-        />
+        <Suspense fallback="">
+          <Controller
+            name="moviePersons"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field orientation="responsive" data-invalid={fieldState.invalid}>
+                <FieldContent>
+                  <FieldLabel htmlFor="directors-dropdown">Actors</FieldLabel>
+                  <FieldDescription>
+                    Which actors worked on this movie?
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+                <MultiSelectWrapper moviePersons={actors} field={field} />
+              </Field>
+            )}
+          />
+        </Suspense>
 
-        <Controller
-          name="moviePersons"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field orientation="responsive" data-invalid={fieldState.invalid}>
-              <FieldContent>
-                <FieldLabel htmlFor="directors-dropdown">Directors</FieldLabel>
-                <FieldDescription>
-                  Which directors worked on this movie?
-                </FieldDescription>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </FieldContent>
-              <MultiSelect
-                options={directors}
-                onValueChange={field.onChange}
-                placeholder="Select directors..."
-                variant="secondary"
-              />
-            </Field>
-          )}
-        />
+        <Suspense fallback={<p>Loading...</p>}>
+          <Controller
+            name="moviePersons"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field orientation="responsive" data-invalid={fieldState.invalid}>
+                <FieldContent>
+                  <FieldLabel htmlFor="directors-dropdown">
+                    Directors
+                  </FieldLabel>
+                  <FieldDescription>
+                    Which directors worked on this movie?
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+                <MultiSelectWrapper moviePersons={directors} field={field} />
+              </Field>
+            )}
+          />
+        </Suspense>
       </form>
     </FormProvider>
   );

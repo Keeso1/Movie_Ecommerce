@@ -173,7 +173,7 @@ model Order {
   userId            String?
   shippingAddressId String
 
-  user            User?        @relation(fields: [userId], references: [id])
+  user            User?       @relation(fields: [userId], references: [id])
   shippingAddress Address     @relation(fields: [shippingAddressId], references: [id])
   items           OrderItem[]
 
@@ -181,11 +181,11 @@ model Order {
 }
 
 model OrderItem {
-  id              String  @id @default(uuid())
+  id              String @id @default(uuid())
   orderId         String
   movieId         String
   quantity        Int
-  priceAtPurchase Decimal
+  priceAtPurchase Int
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   movie Movie @relation(fields: [movieId], references: [id])
