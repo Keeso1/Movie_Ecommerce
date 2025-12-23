@@ -28,7 +28,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  role          String?
+  role          String    @default("user")
   banned        Boolean?  @default(false)
   banReason     String?
   banExpires    DateTime?
@@ -124,7 +124,7 @@ model Movie {
   description String
   price       Int
   releaseDate DateTime
-  imageUrl    String
+  imageUrl    String?
   runtime     Int?
   deleted     Boolean? @default(false)
   stock       Int      @default(1)

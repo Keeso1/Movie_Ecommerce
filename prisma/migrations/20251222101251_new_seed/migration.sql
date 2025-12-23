@@ -78,11 +78,12 @@ CREATE TABLE "movie" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "price" DECIMAL(65,30) NOT NULL,
+    "price" INTEGER NOT NULL,
     "releaseDate" TIMESTAMP(3) NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "runtime" INTEGER,
     "deleted" BOOLEAN DEFAULT false,
+    "stock" INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT "movie_pkey" PRIMARY KEY ("id")
 );
@@ -167,6 +168,9 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 
 -- CreateIndex
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "genre_name_key" ON "genre"("name");
 
 -- CreateIndex
 CREATE INDEX "_MovieToMoviePerson_B_index" ON "_MovieToMoviePerson"("B");

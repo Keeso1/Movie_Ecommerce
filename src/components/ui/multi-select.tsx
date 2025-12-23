@@ -26,6 +26,7 @@ export interface Option {
   /** Group the options by providing key. */
   [key: string]: string | boolean | undefined;
 }
+
 interface GroupOption {
   [key: string]: Option[];
 }
