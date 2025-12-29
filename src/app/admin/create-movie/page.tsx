@@ -1,53 +1,32 @@
-"use client";
-import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 import CreateMovieForm from "@/components/create-movie-form";
 import { getActors, getDirectors } from "@/actions/create-movie-actions";
-import { useEffect, useState } from "react";
+import { headers } from "next/headers";
 
-export default function CreateMoviePage() {
-  const session = authClient.useSession();
-  const [actors, setActors] = useState<{ value: string; label: string }[]>([]);
-  const [directors, setDirectors] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function CreateMoviePage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  useEffect(() => {
-    const fetchMoviePerson = async (role: string) => {
-      try {
-        const moviePersonData =
-          role == "actor" ? await getActors() : await getDirectors();
-        const formattedMoviePersons = moviePersonData.map((person) => ({
-          value: person.id,
-          label: person.name,
-        }));
-        if (role == "actor") {
-          setActors(formattedMoviePersons);
-        } else if (role == "director") {
-          setDirectors(formattedMoviePersons);
-        }
-      } catch (error) {
-        console.error("Failed to fetch actors:", error);
-        // Optionally, handle the error state in the UI
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchMoviePerson = async (role: string) => {
+    const moviePersonData =
+      role == "actor" ? await getActors() : await getDirectors();
+    const formattedMoviePersons = moviePersonData.map((person) => ({
+      value: person.id,
+      label: person.name,
+    }));
+    return formattedMoviePersons;
+  };
 
-    fetchMoviePerson("actor");
-    fetchMoviePerson("director");
-  }, []); // Empty dependency array ensures this runs once on mount
+  const actors = fetchMoviePerson("actor");
+  const directors = fetchMoviePerson("director");
 
-  if (session.data?.user.role !== "admin") {
+  if (!session || session.user.role !== "admin") {
     return (
       <div>
         <p>404 not authorised</p>
       </div>
     );
-  }
-
-  if (isLoading) {
-    return <div>Loading form...</div>;
   }
 
   return (
