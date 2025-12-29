@@ -74,7 +74,6 @@ export async function createOrder(data: CheckoutInput) {
     },
   });
 
-  console.log("Order created:", order);
   return order.id;
 }
 
@@ -98,9 +97,9 @@ export async function updateMovie(data: UpdateMovieInput) {
   const updated = await prisma.movie.update({
     where: { id: data.id },
     data: {
-      ...(data.title && { title: data.title }),
-      ...(data.description && { description: data.description }),
-      ...(data.price && { price: data.price }),
+      ...(data.title !== undefined && { title: data.title }),
+      ...(data.description !== undefined && { description: data.description }),
+      ...(data.price !== undefined && { price: data.price }),
       // Add other fields as needed
     },
   });
