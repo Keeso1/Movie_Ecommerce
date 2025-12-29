@@ -21,17 +21,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}:Readonly<{
+}: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full flex flex-col`}
       >
         <CartProvider>
           <Navbar />
-          <main className="flex-grow">{children}</main>
+          <main className="grow">{children}</main>
         </CartProvider>
       </body>
     </html>

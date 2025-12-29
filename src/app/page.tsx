@@ -41,6 +41,7 @@ export default async function Home(props: PageProps<"/">) {
         <MovieCardContainer movies={oldestMovies}></MovieCardContainer>
         <h2>Oldest Movies</h2>
         <MovieCardContainer movies={cheapestMovies}></MovieCardContainer>
+        
       </div>
     </div>
   );

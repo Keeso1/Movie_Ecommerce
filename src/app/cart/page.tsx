@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
+import Image from "next/image";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
   const {
@@ -64,14 +64,20 @@ export default function CartPage() {
               −
             </button>
 
+            <label htmlFor={`quantity-input-${item.id}`} className="sr-only">
+              Quantity for {item.title}
+            </label>
             <input
+              id={`quantity-input-${item.id}`}
               type="number"
               min={1}
               value={item.quantity}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 updateQuantity(item.id, Number(e.target.value))
               }
               className="w-16 text-center border rounded"
+              placeholder="Qty"
+              title={`Quantity for ${item.title}`}
             />
 
             <button
@@ -89,10 +95,7 @@ export default function CartPage() {
       ))}
 
       <div className="mt-8 flex justify-between items-center">
-        <button
-          onClick={clearCart}
-          className="text-red-600 underline"
-        >
+        <button onClick={clearCart} className="text-red-600 underline">
           Clear cart
         </button>
 
@@ -101,9 +104,9 @@ export default function CartPage() {
             Total: ${getTotalPrice().toFixed(2)}
           </p>
           <Link href="/checkout">
-          <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded">
-            Checkout
-          </button>
+            <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded">
+              Checkout
+            </button>
           </Link>
         </div>
       </div>

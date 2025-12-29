@@ -1,60 +1,61 @@
-'use server'
+"use server";
 
-import prisma from '@/lib/prisma'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
-import type { Prisma } from 'generated/prisma/client' //  only for types
+import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 // Simple payment simulator: waits ms and fails ~10% of the time
+
 async function simulatePayment(amount: number, ms = 1500) {
-  await new Promise((resolve) => setTimeout(resolve, ms))
+  await new Promise((resolve) => setTimeout(resolve, ms));
   if (Math.random() < 0.1) {
-    throw new Error('Payment processing failed')
+    throw new Error("Payment processing failed");
   }
-  return true
+  return true;
 }
 
 export type CheckoutInput = {
   items: {
-    id: string
-    price: number
-    quantity: number
-  }[]
+    id: string;
+    price: number;
+    quantity: number;
+  }[];
   address: {
-    fullName: string
-    street: string
-    city: string
-    country: string
-    zip: string
-  }
-  total: number
-}
+    fullName: string;
+    street: string;
+    city: string;
+    country: string;
+    zip: string;
+  };
+  total: number;
+};
 
 /**
  * Creates an order and returns its ID
  */
+
 export async function createOrder(data: CheckoutInput) {
   //  Only use cookies, no headers needed for manual headers object
   const session = await auth.api.getSession({
-    headers: await headers() // automatically includes cookies
-  })
+    headers: await headers(), // automatically includes cookies
+  });
 
   // Optional: allow guest checkout
   /* if (!session?.user?.id) {
-    throw new Error('Not authenticated')
-  } */
+  throw new Error('Not authenticated')
+} */
 
   //  simulate payment (may throw)
-  await simulatePayment(data.total)
+  await simulatePayment(data.total);
 
   const userConnect = session?.user?.id
     ? { connect: { id: session.user.id } }
-    : undefined
+    : undefined;
 
   const order = await prisma.order.create({
     data: {
       ...(userConnect ? { user: userConnect } : {}),
-      status: 'PAID',
+      status: "ORDER_CONFIRMED",
       items: {
         create: data.items.map((item) => ({
           movie: { connect: { id: item.id } },
@@ -71,7 +72,38 @@ export async function createOrder(data: CheckoutInput) {
         },
       },
     },
-  })
+  });
 
-  return order.id
+  console.log("Order created:", order);
+  return order.id;
+}
+
+export type UpdateMovieInput = {
+  id: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  // Add other fields as needed
+};
+
+export async function updateMovie(data: UpdateMovieInput) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.role || session.user.role !== "ADMIN") {
+    throw new Error("Not authorized");
+  }
+
+  const updated = await prisma.movie.update({
+    where: { id: data.id },
+    data: {
+      ...(data.title && { title: data.title }),
+      ...(data.description && { description: data.description }),
+      ...(data.price && { price: data.price }),
+      // Add other fields as needed
+    },
+  });
+
+  return updated;
 }

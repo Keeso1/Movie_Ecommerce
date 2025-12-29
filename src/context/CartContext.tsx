@@ -27,19 +27,17 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_COOKIE_KEY = 'cart';
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  /* Load cart from cookies */
-  useEffect(() => {
+  const [cart, setCart] = useState<CartItem[]>(() => {
     const storedCart = Cookies.get(CART_COOKIE_KEY);
     if (storedCart) {
       try {
-        setCart(JSON.parse(storedCart));
+        return JSON.parse(storedCart);
       } catch {
         Cookies.remove(CART_COOKIE_KEY);
       }
     }
-  }, []);
+    return [];
+  });
 
   /* Save cart to cookies */
   useEffect(() => {
