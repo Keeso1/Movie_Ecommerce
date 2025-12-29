@@ -74,7 +74,6 @@ export async function createOrder(data: CheckoutInput) {
     },
   });
 
-  console.log("Order created:", order);
   return order.id;
 }
 
