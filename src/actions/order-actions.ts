@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import type { Prisma } from 'generated/prisma/client' //  only for types
+import type { Prisma } from '@prisma/client' //  only for types
 
 // Simple payment simulator: waits ms and fails ~10% of the time
 async function simulatePayment(amount: number, ms = 1500) {

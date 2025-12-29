@@ -172,6 +172,7 @@ model Order {
   status            String
   userId            String?
   shippingAddressId String
+  totalAmount       Decimal @default(0) // Add to line
 
   user            User?        @relation(fields: [userId], references: [id])
   shippingAddress Address     @relation(fields: [shippingAddressId], references: [id])
