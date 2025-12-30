@@ -1,5 +1,116 @@
-"use server"
+"use server";
 import prisma from "@/lib/prisma";
+import { getPosterUrl } from "@/app/api/get_movie_poster";
+import { Option } from "../components/ui/multi-select";
+import { createMovieFormData } from "@/components/create-movie-form";
+
+async function resolveCreatableOptions(
+  options: Option[],
+  modelName: "genre" | "moviePerson",
+  role?: "actor" | "director",
+) {
+  const newOptions = options.filter((option) => option.value === option.label);
+  const existingOptions = options.filter(
+    (option) => option.value !== option.label,
+  );
+
+  for (const option of newOptions) {
+    let existingEntity: { id: string; name: string } | null = null;
+
+    if (modelName === "genre") {
+      existingEntity = await prisma.genre.findFirst({
+        where: { name: { equals: option.value, mode: "insensitive" } },
+      });
+      if (!existingEntity) {
+        existingEntity = await prisma.genre.create({
+          data: { name: option.value },
+        });
+      }
+    } else if (modelName === "moviePerson" && role) {
+      existingEntity = await prisma.moviePerson.findFirst({
+        where: {
+          name: { equals: option.value, mode: "insensitive" },
+          role: role,
+        },
+      });
+      if (!existingEntity) {
+        existingEntity = await prisma.moviePerson.create({
+          data: { name: option.value, role: role },
+        });
+      }
+    }
+
+    if (existingEntity) {
+      existingOptions.push({
+        value: existingEntity.id,
+        label: existingEntity.name,
+      });
+    }
+  }
+  return existingOptions;
+}
+
+export async function createOrUpdateMovie(data: createMovieFormData) {
+  //Debugging mode to not flood the database with test movies
+  const movieid = await prisma.movie.findFirst({
+    where: {
+      title: data.title,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (movieid !== null) {
+    await prisma.movie.delete({
+      where: {
+        id: movieid.id,
+      },
+    });
+  }
+
+  // Get an image based on the title
+  const posterURL = await getPosterUrl(data.title);
+
+  const finalGenres = await resolveCreatableOptions(data.genres, "genre");
+  const finalActors = await resolveCreatableOptions(
+    data.actors,
+    "moviePerson",
+    "actor",
+  );
+  const finalDirectors = await resolveCreatableOptions(
+    data.directors,
+    "moviePerson",
+    "director",
+  );
+
+  const movie = await prisma.movie.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      price: data.price,
+      imageUrl: posterURL,
+      releaseDate: new Date(data.releaseDate),
+      runtime: data.runtime,
+      stock: data.stock,
+      genres: {
+        connect: finalGenres.map((item) => ({ id: item.value })),
+      },
+      moviePersons: {
+        connect: [
+          ...finalDirectors.map((item) => ({
+            id: item.value,
+            role: "director",
+          })),
+          ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
+        ],
+      },
+    },
+  });
+
+  console.log(movie);
+  return movie;
+}
 
 export async function getActors() {
   return await prisma.moviePerson.findMany({
