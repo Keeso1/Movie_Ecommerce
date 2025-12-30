@@ -20,7 +20,7 @@ export default async function Home(props: PageProps<"/">) {
 
   return (
     <div className="flex flex-row min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      <div className="flex flex-row justify-center items-center grow max-w-[30svw] px-5">
+      <div className="flex flex-row justify-center grow max-w-[30svw] px-5">
         <MovieFilter
           genres={genres}
           values={{ genre: genre, search: search }}

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}:Readonly<{
+}: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <CartProvider>
           <Navbar />
-          <main className="flex-grow">{children}</main>
+          <main className="grow">{children}</main>
         </CartProvider>
       </body>
     </html>
