@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
@@ -10,105 +9,64 @@ export default function CartPage() {
     removeFromCart,
     increaseQuantity,
     decreaseQuantity,
-    updateQuantity,
     getTotalPrice,
-    clearCart,
   } = useCart();
 
   if (cart.length === 0) {
-    return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl mb-4">Your cart is empty</h1>
-        <Link href="/" className="text-blue-600 underline">
-          Continue shopping
-        </Link>
-      </div>
-    );
+    return <h2>Your cart is empty 🛒</h2>;
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
+    <div>
+      <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
 
       {cart.map((item) => (
         <div
           key={item.id}
-          className="flex flex-col sm:flex-row justify-between gap-4 border-b py-4"
+          className="flex items-center gap-4 border-b border-border py-4"
         >
-          <div className="flex gap-4">
-            <Image
-              src={item.imageUrl}
-              alt={item.title}
-              width={80}
-              height={120}
-              className="object-cover rounded"
-            />
-            <div>
-              <h2 className="font-semibold">{item.title}</h2>
-              <p className="text-gray-600">${item.price.toFixed(2)}</p>
+          <Image
+            src={item.imageUrl}
+            alt={item.title}
+            width={64}
+            height={96}
+            className="w-16 h-24 object-cover rounded"
+            style={{ width: "4rem", height: "6rem" }}
+            unoptimized
+          />
+
+          <div className="flex-1">
+            <h3 className="font-semibold">{item.title}</h3>
+            <p>SEK {item.price}</p>
+
+            <div className="flex items-center gap-2 mt-2">
               <button
-                onClick={() => removeFromCart(item.id)}
-                className="text-red-500 text-sm mt-2"
+                onClick={() => decreaseQuantity(item.id)}
+                className="px-2 py-1 border rounded"
               >
-                Remove
+                -
+              </button>
+              <span>{item.quantity}</span>
+              <button
+                onClick={() => increaseQuantity(item.id)}
+                className="px-2 py-1 border rounded"
+              >
+                +
               </button>
             </div>
           </div>
 
-          {/* Quantity controls */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => decreaseQuantity(item.id)}
-              className="px-3 py-1 border rounded"
-            >
-              −
-            </button>
-
-            <label htmlFor={`quantity-input-${item.id}`} className="sr-only">
-              Quantity for {item.title}
-            </label>
-            <input
-              id={`quantity-input-${item.id}`}
-              type="number"
-              min={1}
-              value={item.quantity}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                updateQuantity(item.id, Number(e.target.value))
-              }
-              className="w-16 text-center border rounded"
-              placeholder="Qty"
-              title={`Quantity for ${item.title}`}
-            />
-
-            <button
-              onClick={() => increaseQuantity(item.id)}
-              className="px-3 py-1 border rounded"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="font-semibold">
-            ${(item.price * item.quantity).toFixed(2)}
-          </div>
+          <button
+            onClick={() => removeFromCart(item.id)}
+            className="text-red-600 hover:underline"
+          >
+            Remove
+          </button>
         </div>
       ))}
 
-      <div className="mt-8 flex justify-between items-center">
-        <button onClick={clearCart} className="text-red-600 underline">
-          Clear cart
-        </button>
-
-        <div className="text-right">
-          <p className="text-xl font-bold">
-            Total: ${getTotalPrice().toFixed(2)}
-          </p>
-          <Link href="/checkout">
-            <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded">
-              Checkout
-            </button>
-          </Link>
-        </div>
+      <div className="text-right mt-6 text-lg font-bold">
+        Total: SEK {getTotalPrice().toFixed(0)}
       </div>
     </div>
   );

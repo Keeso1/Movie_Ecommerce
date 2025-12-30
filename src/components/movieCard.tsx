@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -10,26 +10,31 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
   const session = authClient.useSession();
   const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     addToCart({
       id: movie.id,
       title: movie.title,
-      price: movie.price ?? 0, // Ensure price defaults to 0 if missing
+      price: movie.price ?? 0,
       quantity: 1,
-      imageUrl: movie.imageUrl ?? "", // Default to empty string if no image
+      imageUrl: movie.imageUrl ?? "",
     });
+
+    console.log("🛒 Added to cart:", movie.title);
   };
 
   return (
     <div className="flex flex-col bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
-      
-      {/* CLICKABLE IMAGE / DETAILS */}
-      <Link href={
-        session.data?.user.role === "admin"
-          ? `/admin/movies/${movie.id}`
-          : `/movies/${movie.id}`
-      }>
-        <div className="relative bg-gray-200">
+      <Link
+        href={
+          session.data?.user.role === "admin"
+            ? `/admin/movies/${movie.id}`
+            : `/movies/${movie.id}`
+        }
+      >
+        <div className="relative bg-gray-200 cursor-pointer">
           {movie.imageUrl ? (
             <Image
               src={movie.imageUrl}
@@ -44,27 +49,26 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
             </div>
           )}
         </div>
+      </Link>
 
-        <div className="p-4">
-          {movie.runtime !== null && <span>{movie.runtime} min</span>}
-          {movie.releaseDate && (
-            <span>{new Date(movie.releaseDate).getFullYear()}</span>
-          )}
-          <h3 className="text-lg font-semibold truncate">{movie.title}</h3>
-          <p>{movie.genres.map((genre) => genre.name).join(" • ")}</p>
-          {movie.price !== null && (
-          <div className="flex flex-row justify-between mt-4 text-green-600 font-semibold">
-            <p>${movie.price.toFixed(2)}</p>
+      <div className="p-4">
+        <h3 className="text-lg font-semibold truncate">{movie.title}</h3>
+
+        <p className="text-gray-500">
+          {movie.genres?.map((g) => g.name).join(" • ")}
+        </p>
+
+        {movie.price !== null && (
+          <div className="flex justify-between mt-4 text-green-600 font-semibold">
+            <p>SEK {movie.price.toFixed(0)}</p>
             <p>{movie.stock} in stock</p>
           </div>
         )}
-        </div>
-      </Link>
+      </div>
 
-      {/* ADD TO CART BUTTON (NOT A LINK) */}
       <button
         onClick={handleAddToCart}
-        className="m-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        className="m-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 relative z-10"
       >
         Add to Cart
       </button>

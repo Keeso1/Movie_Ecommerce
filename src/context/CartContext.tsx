@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export interface CartItem {
   id: string;
@@ -24,27 +24,29 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-const CART_COOKIE_KEY = 'cart';
+
+const CART_COOKIE_KEY = "cart";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return []; // SSR safety
+
     const storedCart = Cookies.get(CART_COOKIE_KEY);
-    if (storedCart) {
-      try {
-        return JSON.parse(storedCart);
-      } catch {
-        Cookies.remove(CART_COOKIE_KEY);
-      }
+
+    console.log("Loaded cart from cookies:", storedCart);
+
+    if (!storedCart) return [];
+
+    try {
+      return JSON.parse(storedCart);
+    } catch {
+      Cookies.remove(CART_COOKIE_KEY);
+      return [];
     }
-    return [];
   });
 
-  /* Save cart to cookies */
   useEffect(() => {
-    Cookies.set(CART_COOKIE_KEY, JSON.stringify(cart), {
-      expires: 7,
-      sameSite: 'lax',
-    });
+    Cookies.set(CART_COOKIE_KEY, JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
@@ -52,13 +54,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
         );
       }
-      return [...prev, item];
+      return [...prev, { ...item }];
     });
+
+    console.log("Cart updated:", item.title);
   };
 
   const removeFromCart = (id: string) => {
@@ -68,9 +70,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const increaseQuantity = (id: string) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
@@ -79,9 +79,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter((item) => item.quantity > 0)
     );
@@ -92,13 +90,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeFromCart(id);
       return;
     }
-
     setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity }
-          : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
   };
 
@@ -135,7 +128,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within CartProvider');
+    throw new Error("useCart must be used within CartProvider");
   }
   return context;
 }
