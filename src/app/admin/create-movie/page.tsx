@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import CreateMovieForm from "@/components/create-movie-form";
 import { getActors, getDirectors } from "@/actions/create-movie-actions";
 import { headers } from "next/headers";
+import { getGenres } from "@/actions/movie-actions";
 
 export default async function CreateMoviePage() {
   const session = await auth.api.getSession({
@@ -18,9 +19,18 @@ export default async function CreateMoviePage() {
     return formattedMoviePersons;
   };
 
+  const fetchGenres = async () => {
+    const genreData = await getGenres();
+    const formattedGenres = genreData.map((genre) => ({
+      value: genre.id,
+      label: genre.name,
+    }));
+    return formattedGenres;
+  };
+
   const actors = fetchMoviePerson("actor");
   const directors = fetchMoviePerson("director");
-
+  const genres = fetchGenres();
   if (!session || session.user.role !== "admin") {
     return (
       <div>
@@ -30,6 +40,10 @@ export default async function CreateMoviePage() {
   }
 
   return (
-    <CreateMovieForm actors={actors} directors={directors}></CreateMovieForm>
+    <CreateMovieForm
+      actors={actors}
+      directors={directors}
+      genres={genres}
+    ></CreateMovieForm>
   );
 }

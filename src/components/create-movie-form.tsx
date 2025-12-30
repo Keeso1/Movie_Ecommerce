@@ -9,15 +9,17 @@ import {
   FieldContent,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-// import { Button } from "@/components/ui/button";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 // import MultipleSelectDemo from "@/components/ui/select-32";
 // import { getMoviePersons } from "@/actions/create-movie-actions";
 import MultipleSelector, { Option } from "./ui/multi-select";
 import { Controller } from "react-hook-form";
 import { FieldDescription } from "@/components/ui/field";
 import { Suspense, use, useState } from "react";
+import { createOrUpdateMovie } from "@/actions/create-movie-actions";
 import { ControllerRenderProps } from "react-hook-form";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -30,22 +32,22 @@ const schema = z.object({
   stock: z.number().min(0, "Stock can't be negative"),
   actors: z.array(z.object({ value: z.string(), label: z.string() })),
   directors: z.array(z.object({ value: z.string(), label: z.string() })),
-  genres: z.string().array(),
+  genres: z.array(z.object({ value: z.string(), label: z.string() })),
 });
 
-type createMovieFormData = z.infer<typeof schema>;
+export type createMovieFormData = z.infer<typeof schema>;
 
 export default function CreateMovieForm({
   actors,
   directors,
+  genres,
 }: {
   actors: Promise<Option[]>;
   directors: Promise<Option[]>;
+  genres: Promise<Option[]>;
 }) {
-  // const router = useRouter();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  // const [isAuthorised, setIsAuthorised] = useState(false)
-  console.log(actors);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -58,25 +60,34 @@ export default function CreateMovieForm({
       stock: 0,
       actors: new Array<Option>(),
       directors: new Array<Option>(),
-      genres: new Array<string>(),
+      genres: new Array<Option>(),
     },
   });
 
   function MultiSelectWrapper({
-    moviePersons,
+    data,
     field,
   }: {
-    moviePersons: Promise<Option[]>;
-    field: ControllerRenderProps<createMovieFormData, "actors" | "directors">;
+    data: Promise<Option[]>;
+    field: ControllerRenderProps<
+      createMovieFormData,
+      "actors" | "directors" | "genres"
+    >;
   }) {
-    const resolved_moviePersons = use(moviePersons);
+    const resolvedData = use(data);
 
     return (
       <MultipleSelector
         value={field.value}
         onChange={field.onChange}
-        options={resolved_moviePersons}
-        placeholder="Type to search for actors/directors..."
+        options={resolvedData}
+        placeholder={
+          field.name === "genres"
+            ? "Type to search for genre.."
+            : field.name === "actors"
+              ? "Type to search for actors"
+              : "Type to search for directors"
+        }
         creatable
         emptyIndicator={
           <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
@@ -87,10 +98,30 @@ export default function CreateMovieForm({
     );
   }
 
-  const onSubmit = (data: createMovieFormData) => {
+  const onSubmit = async (data: createMovieFormData) => {
     setIsLoading(true);
-    console.log(data);
-    setIsLoading(false);
+    console.log(data.genres);
+    console.log(data.actors);
+    console.log(data.directors);
+    try {
+      const result = await createOrUpdateMovie(data);
+      if (!result) {
+        toast("Error", {
+          description: "Failed to create movie",
+        });
+      } else {
+        toast("Success", {
+          description: "Movie created successfully",
+        });
+        router.push("/");
+      }
+    } catch {
+      toast("Error", {
+        description: "An unexpected error occurred",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -118,8 +149,8 @@ export default function CreateMovieForm({
             <Input
               type="number"
               {...form.register("runtime", {
-                valueAsDate: true,
                 disabled: isLoading,
+                valueAsNumber: true,
               })}
             />
             <FieldError errors={[form.formState.errors.runtime]} />
@@ -132,7 +163,7 @@ export default function CreateMovieForm({
             <Input
               type="date"
               {...form.register("releaseDate", {
-                valueAsDate: true,
+                //valueAsDate: true,
                 disabled: isLoading,
               })}
             />
@@ -185,7 +216,7 @@ export default function CreateMovieForm({
                     <FieldError errors={[fieldState.error]} />
                   )}
                 </FieldContent>
-                <MultiSelectWrapper moviePersons={directors} field={field} />
+                <MultiSelectWrapper data={directors} field={field} />
               </Field>
             )}
           />
@@ -206,11 +237,36 @@ export default function CreateMovieForm({
                     <FieldError errors={[fieldState.error]} />
                   )}
                 </FieldContent>
-                <MultiSelectWrapper moviePersons={actors} field={field} />
+                <MultiSelectWrapper data={actors} field={field} />
               </Field>
             )}
           />
         </Suspense>
+
+        <Suspense fallback={<p>Loading...</p>}>
+          <Controller
+            name="genres"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field orientation="responsive" data-invalid={fieldState.invalid}>
+                <FieldContent>
+                  <FieldLabel htmlFor="directors-dropdown">Genres</FieldLabel>
+                  <FieldDescription>
+                    Which genres does this movie have?
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+                <MultiSelectWrapper data={genres} field={field} />
+              </Field>
+            )}
+          />
+        </Suspense>
+
+        <Button type="submit" disabled={isLoading}>
+          Create Movie
+        </Button>
       </form>
     </FormProvider>
   );
