@@ -50,7 +50,7 @@ export default function MovieFilter({
 
   console.log("genre", values ? values.genre : undefined);
   return (
-    <div className="flex flex-col flex-wrap">
+    <div className="flex flex-col gap-2 p-10">
       <Input
         type="search"
         placeholder="Search..."

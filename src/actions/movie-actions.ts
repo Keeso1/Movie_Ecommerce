@@ -10,7 +10,7 @@ type sortingOptions = "recent" | "oldest" | "price" | "popularity";
 export const getMovies = async (
   sort: sortingOptions,
   genre?: string,
-  search?: string
+  search?: string,
 ) => {
   const whereClause: MovieWhereInput = {
     AND: [
@@ -62,6 +62,7 @@ export const getMovies = async (
     default:
       orderByClause = { releaseDate: "asc" };
   }
+
   const movies = await prisma.movie.findMany({
     where: whereClause,
     include: {

@@ -20,6 +20,9 @@ import { createOrUpdateMovie } from "@/actions/create-movie-actions";
 import { ControllerRenderProps } from "react-hook-form";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { fetchMoviePerson, fetchGenres } from "@/app/admin/create-movie/page";
+import { getMovieType } from "@/actions/movie-actions";
+import { useEffect } from "react";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -37,32 +40,55 @@ const schema = z.object({
 
 export type createMovieFormData = z.infer<typeof schema>;
 
-export default function CreateMovieForm({
-  actors,
-  directors,
-  genres,
-}: {
-  actors: Promise<Option[]>;
-  directors: Promise<Option[]>;
-  genres: Promise<Option[]>;
-}) {
+export default function UpdateMovieForm({ movie }: { movie: getMovieType }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
+  const actors = fetchMoviePerson("actor");
+  const directors = fetchMoviePerson("director");
+  const genres = fetchGenres();
+
+  const form = useForm<createMovieFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: "",
-      description: "",
-      runtime: 0,
-      releaseDate: new Date().toISOString().split("T")[0],
-      price: 0,
-      stock: 0,
-      actors: new Array<Option>(),
-      directors: new Array<Option>(),
-      genres: new Array<Option>(),
+      title: movie.title,
+      description: movie.description,
+      runtime: movie.runtime ?? undefined,
+      releaseDate: movie.releaseDate.toISOString().split("T")[0],
+      price: movie.price,
+      stock: movie.stock,
+      actors: [],
+      directors: [],
+      genres: [],
     },
   });
+
+  useEffect(() => {
+    // Transform the movie's relational data into the Option[] format for the form.
+    const defaultActors = movie.moviePersons
+      .filter((person) => person.role === "actor")
+      .map((person) => ({ value: person.id, label: person.name }));
+    const defaultDirectors = movie.moviePersons
+      .filter((person) => person.role === "director")
+      .map((person) => ({ value: person.id, label: person.name }));
+    const defaultGenres = movie.genres.map((genre) => ({
+      value: genre.id,
+      label: genre.name,
+    }));
+
+    // Reset the form with the fully populated default values.
+    form.reset({
+      title: movie.title,
+      description: movie.description,
+      runtime: movie.runtime ?? undefined,
+      releaseDate: movie.releaseDate.toISOString().split("T")[0],
+      price: movie.price,
+      stock: movie.stock,
+      actors: defaultActors,
+      directors: defaultDirectors,
+      genres: defaultGenres,
+    });
+  }, [movie, form]);
 
   function MultiSelectWrapper({
     data,
