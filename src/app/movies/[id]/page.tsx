@@ -1,24 +1,30 @@
 // 'use server' - This page will be server-rendered to fetch movie details
-'use server';
+"use server";
 
 import { getMovieById } from "@/actions/movie-actions"; // Function to fetch movie by ID
 import Image from "next/image";
 import AddToCartButton from "@/components/ui/AddToCartButton";
-
+import { auth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { headers } from "next/headers";
 
 export default async function MoviePage(props: { params: { id: string } }) {
   const params = await props.params;
   const movie = await getMovieById(params.id); // Fetch movie details by ID
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   if (!movie) {
     return <div>Movie not found</div>;
   }
 
   const directors = movie.moviePersons.filter(
-    (person) => person.role.toLowerCase() === "director"
+    (person) => person.role.toLowerCase() === "director",
   );
   const actors = movie.moviePersons.filter(
-    (person) => person.role.toLowerCase() === "actor"
+    (person) => person.role.toLowerCase() === "actor",
   );
 
   return (
@@ -97,10 +103,17 @@ export default async function MoviePage(props: { params: { id: string } }) {
               {/* Add to Cart Button */}
               <AddToCartButton movie={movie} />
             </div>
+
+            {session?.user.role === "admin" ? (
+              <Button asChild type="button">
+                <Link href={`/admin/movies/${params.id}`}>Edit Movie</Link>
+              </Button>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
-

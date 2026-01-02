@@ -61,14 +61,6 @@ export async function createOrUpdateMovie(data: createMovieFormData) {
     },
   });
 
-  if (movieid !== null) {
-    await prisma.movie.delete({
-      where: {
-        id: movieid.id,
-      },
-    });
-  }
-
   // Get an image based on the title
   const posterURL = await getPosterUrl(data.title);
 
@@ -84,29 +76,60 @@ export async function createOrUpdateMovie(data: createMovieFormData) {
     "director",
   );
 
-  const movie = await prisma.movie.create({
-    data: {
-      title: data.title,
-      description: data.description,
-      price: data.price,
-      imageUrl: posterURL,
-      releaseDate: new Date(data.releaseDate),
-      runtime: data.runtime,
-      stock: data.stock,
-      genres: {
-        connect: finalGenres.map((item) => ({ id: item.value })),
+  let movie;
+
+  if (movieid) {
+    movie = await prisma.movie.update({
+      where: {
+        id: movieid.id,
       },
-      moviePersons: {
-        connect: [
-          ...finalDirectors.map((item) => ({
-            id: item.value,
-            role: "director",
-          })),
-          ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
-        ],
+      data: {
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        imageUrl: posterURL,
+        releaseDate: new Date(data.releaseDate),
+        runtime: data.runtime,
+        stock: data.stock,
+        genres: {
+          connect: finalGenres.map((item) => ({ id: item.value })),
+        },
+        moviePersons: {
+          connect: [
+            ...finalDirectors.map((item) => ({
+              id: item.value,
+              role: "director",
+            })),
+            ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
+          ],
+        },
       },
-    },
-  });
+    });
+  } else {
+    movie = await prisma.movie.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        imageUrl: posterURL,
+        releaseDate: new Date(data.releaseDate),
+        runtime: data.runtime,
+        stock: data.stock,
+        genres: {
+          connect: finalGenres.map((item) => ({ id: item.value })),
+        },
+        moviePersons: {
+          connect: [
+            ...finalDirectors.map((item) => ({
+              id: item.value,
+              role: "director",
+            })),
+            ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
+          ],
+        },
+      },
+    });
+  }
 
   console.log(movie);
   return movie;
