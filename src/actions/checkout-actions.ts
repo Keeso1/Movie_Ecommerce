@@ -35,7 +35,10 @@ export async function createOrder(
 
   const userId = session?.user?.id;
   if (!userId) {
-    return { success: false, message: "User not authenticated" };
+    return {
+      success: true,
+      message: "User must be logged in to place an order.",
+    }; //user must be logged in check
   }
 
   const address = await prisma.address.create({
