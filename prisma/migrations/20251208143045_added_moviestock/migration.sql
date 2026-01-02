@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "movie" ADD COLUMN     "stock" INTEGER NOT NULL DEFAULT 1;

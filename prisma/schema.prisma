@@ -192,3 +192,9 @@ model OrderItem {
 
   @@map("orderItem")
 }
+
+enum OrderStatus {
+  CREATED
+  CONFIRMED
+  CANCELLED
+}
