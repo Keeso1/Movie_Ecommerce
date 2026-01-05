@@ -68,6 +68,7 @@ export default function MovieFilter({
         onChange={(e) => setSearchValue(e.target.value)}
       />
       <Combobox
+        name="Filter by genre.."
         options={genresArr}
         value={values ? values.genre : undefined}
         onValueChangeAction={(newValue) => {
@@ -76,12 +77,13 @@ export default function MovieFilter({
         placeholder="Search for a genre.."
       ></Combobox>
       <Combobox
+        name="Sort after.."
         options={sortingArr}
         value={values ? values.sort : undefined}
         onValueChangeAction={(newValue) => {
           router.push(path + "?" + createQueryString("sort", newValue));
         }}
-        placeholder="Search for a filtering option"
+        placeholder="Search for a sorting option"
       ></Combobox>
     </div>
   );
