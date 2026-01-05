@@ -12,7 +12,11 @@ export default function MovieFilter({
 }: {
   genres: getGenresType;
   values:
-    | { genre?: string | undefined; search?: string | undefined }
+    | {
+        genre?: string | undefined;
+        search?: string | undefined;
+        sort?: string | undefined;
+      }
     | undefined;
 }) {
   const router = useRouter();
@@ -25,6 +29,13 @@ export default function MovieFilter({
     value: genre.name,
     label: genre.name,
   }));
+
+  const sortingArr = [
+    { value: "expensive", label: "Highest Price" },
+    { value: "cheapest", label: "Lowest Price" },
+    { value: "oldest", label: "Oldest" },
+    { value: "recent", label: "Recent" },
+  ];
 
   const createQueryString = useCallback(
     (name: string, value: string | undefined) => {
@@ -48,7 +59,6 @@ export default function MovieFilter({
     }
   }, [debouncedSearchValue, values?.search, path, createQueryString, router]);
 
-  console.log("genre", values ? values.genre : undefined);
   return (
     <div className="flex flex-col gap-2 p-10">
       <Input
@@ -63,6 +73,15 @@ export default function MovieFilter({
         onValueChangeAction={(newValue) => {
           router.push(path + "?" + createQueryString("genre", newValue));
         }}
+        placeholder="Search for a genre.."
+      ></Combobox>
+      <Combobox
+        options={sortingArr}
+        value={values ? values.sort : undefined}
+        onValueChangeAction={(newValue) => {
+          router.push(path + "?" + createQueryString("sort", newValue));
+        }}
+        placeholder="Search for a filtering option"
       ></Combobox>
     </div>
   );

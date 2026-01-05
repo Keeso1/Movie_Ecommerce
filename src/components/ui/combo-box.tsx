@@ -28,10 +28,12 @@ export function Combobox({
   options,
   value,
   onValueChangeAction,
+  placeholder,
 }: {
   options: ComboBoxOptions;
   value: string | undefined;
   onValueChangeAction: (value: string | undefined) => void;
+  placeholder: string | undefined;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -52,7 +54,7 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search genre..." />
+          <CommandInput placeholder={placeholder} />
           <CommandList>
             <CommandEmpty>No option found.</CommandEmpty>
             <CommandGroup>

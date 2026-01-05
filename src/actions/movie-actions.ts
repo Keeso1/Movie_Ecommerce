@@ -5,10 +5,9 @@ import {
   MovieOrderByWithRelationInput,
   MovieWhereInput,
 } from "../../generated/prisma/models";
-type sortingOptions = "recent" | "oldest" | "price" | "popularity";
 
 export const getMovies = async (
-  sort: sortingOptions,
+  sort?: string,
   genre?: string,
   search?: string,
 ) => {
@@ -51,13 +50,16 @@ export const getMovies = async (
   let orderByClause: MovieOrderByWithRelationInput;
   switch (sort) {
     case "recent":
-      orderByClause = { releaseDate: "asc" };
-      break;
-    case "oldest":
       orderByClause = { releaseDate: "desc" };
       break;
-    case "price":
+    case "oldest":
+      orderByClause = { releaseDate: "asc" };
+      break;
+    case "cheapest":
       orderByClause = { price: "asc" };
+      break;
+    case "expensive":
+      orderByClause = { price: "desc" };
       break;
     default:
       orderByClause = { releaseDate: "asc" };
