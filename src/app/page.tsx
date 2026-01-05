@@ -22,8 +22,8 @@ export default async function Home(props: PageProps<"/">) {
   const movies = await getMovies(sort, genre, search);
 
   return (
-    <div className="flex flex-row min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      <div className="flex flex-row flex-wrap sticky top-0 self-start justify-center grow max-w-[20svw] h-screen overflow-y-auto">
+    <div className="flex flex-col md:flex-row min-h-screen bg-zinc-50 font-sans dark:bg-black">
+      <div className="w-full justify-items-start p-4 shrink-0 md:w-[20svw] md:h-screen md:sticky md:top-0 md:self-start md:overflow-y-auto">
         <MovieFilter
           genres={genres}
           values={{ sort: sort, genre: genre, search: search }}

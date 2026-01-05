@@ -8,17 +8,18 @@ import { Button } from "./ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 
 import { ShoppingCartIcon } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 export default function Navbar() {
   const session = authClient.useSession();
   const router = useRouter();
   const { getTotalItems } = useCart();
 
   return (
-    <nav className="bg-white dark:bg-black shadow p-4 flex justify-between">
+    <nav className="bg-white dark:bg-black shadow dark:shadow-white p-4 flex justify-between">
       {/* RIGHT: Actions */}
       <div className="flex items-center gap-4">
         <Link href="/" className="font-bold text-lg">
-          Movie Store
+          {useIsMobile() ? "M" : "Movie Store"}
         </Link>
 
         {/* 🌗 THEME TOGGLE — ALWAYS VISIBLE */}

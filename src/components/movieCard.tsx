@@ -19,7 +19,7 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
   };
 
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
+    <div className="flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
       {/* CLICKABLE IMAGE / DETAILS */}
       <Link href={`/movies/${movie.id}`}>
         <div className="relative bg-gray-200">
