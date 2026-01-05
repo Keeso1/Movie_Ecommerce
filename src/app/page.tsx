@@ -31,12 +31,8 @@ export default async function Home(props: PageProps<"/">) {
       </div>
       <div className="flex flex-col grow items-center gap-6 text-center sm:items-start sm:text-left">
         <h1 className="max-w-s text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-          Welcome to the Movie Shop!
+          Available Movies:
         </h1>
-        <p className="max-w-md text-lg text align-middleleading-8 text-zinc-600 dark:text-zinc-400">
-          Movie Card Component
-        </p>
-        <h2>Recent movies</h2>
         <MovieCardContainer movies={movies}></MovieCardContainer>
       </div>
     </div>

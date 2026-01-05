@@ -50,19 +50,18 @@ async function resolveCreatableOptions(
   return existingOptions;
 }
 
-export async function createOrUpdateMovie(data: createMovieFormData) {
-  //Debugging mode to not flood the database with test movies
-  const movieid = await prisma.movie.findFirst({
-    where: {
-      title: data.title,
-    },
-    select: {
-      id: true,
-    },
-  });
-
+export async function createOrUpdateMovie(
+  data: createMovieFormData,
+  id?: string,
+) {
   // Get an image based on the title
+  let posterImage;
   const posterURL = await getPosterUrl(data.title);
+  if (posterURL) {
+    posterImage = posterURL;
+  } else {
+    posterImage = "/missing-image1.png";
+  }
 
   const finalGenres = await resolveCreatableOptions(data.genres, "genre");
   const finalActors = await resolveCreatableOptions(
@@ -78,16 +77,16 @@ export async function createOrUpdateMovie(data: createMovieFormData) {
 
   let movie;
 
-  if (movieid) {
+  if (id) {
     movie = await prisma.movie.update({
       where: {
-        id: movieid.id,
+        id: id,
       },
       data: {
         title: data.title,
         description: data.description,
         price: data.price,
-        imageUrl: posterURL,
+        imageUrl: posterImage,
         releaseDate: new Date(data.releaseDate),
         runtime: data.runtime,
         stock: data.stock,
@@ -111,7 +110,7 @@ export async function createOrUpdateMovie(data: createMovieFormData) {
         title: data.title,
         description: data.description,
         price: data.price,
-        imageUrl: posterURL,
+        imageUrl: posterImage,
         releaseDate: new Date(data.releaseDate),
         runtime: data.runtime,
         stock: data.stock,
