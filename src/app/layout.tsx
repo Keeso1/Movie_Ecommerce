@@ -20,20 +20,20 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" className="h-full">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full flex flex-col`}
-      >
-        <CartProvider>
-          <Navbar />
-          <main className="grow">{children}</main>
-        </CartProvider>
-      </body>
-    </html>
-  );
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return (
+		<html lang="en" suppressHydrationWarning={true}>
+			<body className="h-full antialiased">
+				<ThemeProvider>
+					<CartProvider>
+						<Navbar />
+						<main className="grow">{children}</main>
+					</CartProvider>
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }
