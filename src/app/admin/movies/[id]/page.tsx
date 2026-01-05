@@ -34,6 +34,7 @@ export default async function MoviePage(props: { params: { id: string } }) {
       actors={actors}
       directors={directors}
       genres={genres}
+      movieId={params.id}
     ></UpdateMovieForm>
   );
 }

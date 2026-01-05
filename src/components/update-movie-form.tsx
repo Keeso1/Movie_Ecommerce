@@ -44,11 +44,13 @@ export default function UpdateMovieForm({
   actors,
   directors,
   genres,
+  movieId,
 }: {
   movie: getMovieType;
   actors: Promise<Option[]>;
   directors: Promise<Option[]>;
   genres: Promise<Option[]>;
+  movieId: string;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -135,7 +137,7 @@ export default function UpdateMovieForm({
     console.log(data.actors);
     console.log(data.directors);
     try {
-      const result = await createOrUpdateMovie(data);
+      const result = await createOrUpdateMovie(data, movieId);
       if (!result) {
         toast("Error", {
           description: "Failed to create movie",
