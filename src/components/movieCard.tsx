@@ -14,6 +14,7 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
     e.stopPropagation();
     e.preventDefault();
 
+<<<<<<< Updated upstream
     addToCart({
       id: movie.id,
       title: movie.title,
@@ -23,6 +24,9 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
     });
 
     console.log("🛒 Added to cart:", movie.title);
+=======
+    addToCart({ movieId: movie.id, price: movie.price, quantity: 1 });
+>>>>>>> Stashed changes
   };
 
   return (
@@ -67,6 +71,7 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
       </div>
 
       <button
+        type="button"
         onClick={handleAddToCart}
         className="m-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 relative z-10"
       >

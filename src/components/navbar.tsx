@@ -10,8 +10,16 @@ import { CartBadge } from "./CartBadge";
 export default function Navbar() {
   const session = authClient.useSession();
   const router = useRouter();
+<<<<<<< Updated upstream
   const { getTotalItems } = useCart();
   const totalItems = getTotalItems();
+=======
+  const { cart } = useCart();
+
+  // Calculate total items once to avoid hydration mismatch
+
+  const totalItems = cart.totalItems;
+>>>>>>> Stashed changes
 
   return (
     <nav>
