@@ -41,7 +41,7 @@ export default function EditMoviePersonForm({
     <div className="container mx-auto p-6 max-w-2xl">
       <div className="flex items-center mb-8">
         <Link
-          href={`/admin/movies/people/${person.id}`}
+          href="/admin/movies/people"
           className="text-gray-600 hover:text-gray-900 mr-4"
         >
           ← Back
