@@ -7,7 +7,7 @@ CREATE TABLE "user" (
     "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "role" TEXT,
+    "role" TEXT NOT NULL DEFAULT 'user',
     "banned" BOOLEAN DEFAULT false,
     "banReason" TEXT,
     "banExpires" TIMESTAMP(3),
@@ -78,11 +78,12 @@ CREATE TABLE "movie" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "price" DECIMAL(65,30) NOT NULL,
+    "price" INTEGER NOT NULL,
     "releaseDate" TIMESTAMP(3) NOT NULL,
-    "imageUrl" TEXT NOT NULL,
+    "imageUrl" TEXT,
     "runtime" INTEGER,
     "deleted" BOOLEAN DEFAULT false,
+    "stock" INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT "movie_pkey" PRIMARY KEY ("id")
 );
@@ -111,8 +112,9 @@ CREATE TABLE "order" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "status" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
     "shippingAddressId" TEXT NOT NULL,
+    "totalAmount" DECIMAL(65,30) NOT NULL DEFAULT 0,
 
     CONSTRAINT "order_pkey" PRIMARY KEY ("id")
 );
@@ -123,7 +125,7 @@ CREATE TABLE "orderItem" (
     "orderId" TEXT NOT NULL,
     "movieId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "priceAtPurchase" DECIMAL(65,30) NOT NULL,
+    "priceAtPurchase" INTEGER NOT NULL,
 
     CONSTRAINT "orderItem_pkey" PRIMARY KEY ("id")
 );
@@ -169,6 +171,9 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "genre_name_key" ON "genre"("name");
+
+-- CreateIndex
 CREATE INDEX "_MovieToMoviePerson_B_index" ON "_MovieToMoviePerson"("B");
 
 -- CreateIndex
@@ -184,7 +189,7 @@ ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "order" ADD CONSTRAINT "order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "order" ADD CONSTRAINT "order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "order" ADD CONSTRAINT "order_shippingAddressId_fkey" FOREIGN KEY ("shippingAddressId") REFERENCES "address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

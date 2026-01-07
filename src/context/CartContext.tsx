@@ -28,35 +28,42 @@ const CART_COOKIE_KEY = 'cart';
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  // CRITICAL: track if the cookie has been read yet
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  /* Load cart from cookies */
+  /* 1. Load cart from cookies on mount */
   useEffect(() => {
     const storedCart = Cookies.get(CART_COOKIE_KEY);
     if (storedCart) {
       try {
-        setCart(JSON.parse(storedCart));
-      } catch {
+        const parsed = JSON.parse(storedCart);
+        if (Array.isArray(parsed)) {
+          setCart(parsed);
+        }
+      } catch (error) {
+        console.error("Failed to parse cart cookie:", error);
         Cookies.remove(CART_COOKIE_KEY);
       }
     }
+    setIsInitialized(true); // Mark as ready
   }, []);
 
-  /* Save cart to cookies */
+  /* 2. Save cart to cookies ONLY after initialization */
   useEffect(() => {
-    Cookies.set(CART_COOKIE_KEY, JSON.stringify(cart), {
-      expires: 7,
-      sameSite: 'lax',
-    });
-  }, [cart]);
+    if (isInitialized) {
+      Cookies.set(CART_COOKIE_KEY, JSON.stringify(cart), {
+        expires: 7,
+        sameSite: 'lax',
+      });
+    }
+  }, [cart, isInitialized]);
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
       return [...prev, item];
@@ -70,9 +77,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const increaseQuantity = (id: string) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
@@ -81,9 +86,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter((item) => item.quantity > 0)
     );
@@ -94,13 +97,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeFromCart(id);
       return;
     }
-
     setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity }
-          : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
   };
 
@@ -109,11 +107,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     Cookies.remove(CART_COOKIE_KEY);
   };
 
-  const getTotalItems = () =>
-    cart.reduce((acc, item) => acc + item.quantity, 0);
+  const getTotalItems = () => cart.reduce((acc, item) => acc + item.quantity, 0);
+  const getTotalPrice = () => cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const getTotalPrice = () =>
-    cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // CRITICAL: Prevent the Checkout page from seeing an empty cart during hydration.
+  // This ensures handlePaymentSubmit has access to the actual cart data.
+  if (!isInitialized) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <CartContext.Provider

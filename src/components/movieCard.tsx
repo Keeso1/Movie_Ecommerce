@@ -29,7 +29,7 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
               alt={movie.title}
               width={300}
               height={500}
-              className="object-cover"
+              className="object-fill"
             />
           ) : (
             <div className="h-[500px] flex items-center justify-center bg-gray-100 text-gray-500">

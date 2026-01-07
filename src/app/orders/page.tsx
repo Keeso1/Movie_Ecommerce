@@ -1,283 +1,219 @@
-import { authClient } from "@/lib/auth-client";
-import { cookies } from "next/headers";
-import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Package,
-  Calendar,
-  MapPin,
-  CreditCard,
-  ArrowLeft,
-  Truck,
-  CheckCircle,
-} from "lucide-react";
+// src/app/orders/page.tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { getUserOrders } from "@/actions/checkout-actions";
 import Link from "next/link";
-import { format } from "date-fns";
 
-export default async function OrdersPage() {
-  const cookieStore = await cookies();
-  const session = await authClient.api.getSession({
-    headers: { cookie: cookieStore.toString() },
-  });
+interface OrderItem {
+  id: string;
+  quantity: number;
+  priceAtPurchase: string;
+  movie: {
+    title: string;
+    imageUrl: string | null;
+  };
+}
 
-  if (!session?.data?.user) {
+interface Order {
+  id: string;
+  status: string;
+  createdAt: string;
+  totalAmount: number;
+  items: OrderItem[];
+  shippingAddress: {
+    street: string;
+    city: string;
+    country: string;
+    postalCode: string;
+  };
+}
+
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const userOrders = await getUserOrders();
+      setOrders(userOrders as any);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <Package className="h-24 w-24 mx-auto text-gray-300 mb-6" />
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Please Sign In
-        </h1>
-        <p className="text-gray-600 mb-8">
-          You need to be signed in to view your orders.
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Button asChild variant="outline">
-            <Link href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signin">Sign In</Link>
-          </Button>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">My Orders</h1>
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Loading orders...</p>
         </div>
       </div>
     );
   }
-
-  const orders = await prisma.order.findMany({
-    include: {
-      items: {
-        include: {
-          movie: true,
-        },
-      },
-      shippingAddress: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 10,
-  });
-
-  const getOrderStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "shipped":
-        return "bg-blue-100 text-blue-800";
-      case "processing":
-        return "bg-yellow-100 text-yellow-800";
-      case "pending":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getOrderStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return <CheckCircle className="h-4 w-4" />;
-      case "shipped":
-        return <Truck className="h-4 w-4" />;
-      case "processing":
-        return <Package className="h-4 w-4" />;
-      default:
-        return <Package className="h-4 w-4" />;
-    }
-  };
 
   if (orders.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <Package className="h-24 w-24 mx-auto text-gray-300 mb-6" />
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">No Orders Yet</h1>
-        <p className="text-gray-600 mb-8">You haven't placed any orders yet.</p>
-        <Button asChild size="lg">
-          <Link href="/">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Browse Movies
-          </Link>
-        </Button>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">My Orders</h1>
+        <div className="text-center py-12 bg-white rounded-lg shadow">
+          <svg
+            className="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+          <h3 className="mt-2 text-lg font-medium text-gray-900">No orders</h3>
+          <p className="mt-1 text-gray-500">
+            You haven't placed any orders yet.
+          </p>
+          <div className="mt-6">
+            <Link
+              href="/"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Browse Movies
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "processing":
+        return "bg-blue-100 text-blue-800";
+      case "shipped":
+        return "bg-yellow-100 text-yellow-800";
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-          <p className="text-gray-600 mt-2">
-            View your order history and track shipments
-          </p>
-        </div>
-        <Button asChild variant="outline">
-          <Link href="/">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shopping
-          </Link>
-        </Button>
-      </div>
+      <h1 className="text-3xl font-bold mb-8">My Orders</h1>
 
       <div className="space-y-6">
-        {orders.map((order) => {
-          const orderTotal = order.items.reduce(
-            (total, item) =>
-              total + Number(item.priceAtPurchase) * item.quantity,
-            0
-          );
-          const shipping = orderTotal >= 50 ? 0 : 5.99;
-          const tax = orderTotal * 0.25;
-          const total = orderTotal + shipping + tax;
-
-          return (
-            <Card
-              key={order.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              <CardHeader className="bg-gray-50">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Package className="h-5 w-5" />
-                      Order #{order.id.slice(-8).toUpperCase()}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-4 mt-2">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {format(new Date(order.createdAt), "MMM d, yyyy")}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getOrderStatusColor(
-                          order.status
-                        )}`}
-                      >
-                        {getOrderStatusIcon(order.status)}
-                        {order.status.charAt(0).toUpperCase() +
-                          order.status.slice(1)}
-                      </span>
-                    </CardDescription>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold">${total.toFixed(2)}</p>
-                    <p className="text-sm text-gray-600">
-                      {order.items.length} item(s)
-                    </p>
-                  </div>
+        {orders.map((order) => (
+          <div
+            key={order.id}
+            className="bg-white rounded-lg shadow-md overflow-hidden"
+          >
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    Order #{order.id.slice(-8).toUpperCase()}
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Placed on {formatDate(order.createdAt)}
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Order Items */}
-                  <div className="md:col-span-2">
-                    <h3 className="font-semibold mb-3">Items</h3>
-                    <div className="space-y-3">
-                      {order.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded"
-                        >
-                          <div className="w-12 h-16 bg-gray-200 rounded flex items-center justify-center">
-                            <span className="text-gray-400">🎬</span>
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium">{item.movie.title}</p>
-                            <p className="text-sm text-gray-600">
-                              Qty: {item.quantity} × $
-                              {Number(item.priceAtPurchase).toFixed(2)}
-                            </p>
-                          </div>
-                          <p className="font-semibold">
-                            $
-                            {(
-                              Number(item.priceAtPurchase) * item.quantity
-                            ).toFixed(2)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                <div className="mt-2 sm:mt-0 text-right">
+                  <div className="text-xl font-bold">
+                    ${Number(order.totalAmount).toFixed(2)}
                   </div>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                      order.status
+                    )}`}
+                  >
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-                  {/* Order Details */}
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold mb-2 flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        Shipping Address
-                      </h3>
-                      <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
-                        <p>{order.shippingAddress.street}</p>
-                        <p>
-                          {order.shippingAddress.city},{" "}
-                          {order.shippingAddress.postalCode}
+            <div className="p-6">
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-900 mb-2">
+                  Shipping Address
+                </h3>
+                <p className="text-gray-600">
+                  {order.shippingAddress.street}
+                  <br />
+                  {order.shippingAddress.city},{" "}
+                  {order.shippingAddress.postalCode}
+                  <br />
+                  {order.shippingAddress.country}
+                </p>
+              </div>
+
+              <h3 className="text-sm font-medium text-gray-900 mb-2">
+                Items ({order.items.length})
+              </h3>
+              <div className="space-y-4">
+                {order.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between py-4 border-b border-gray-100"
+                  >
+                    <div className="flex items-center">
+                      {item.movie.imageUrl && (
+                        <img
+                          src={item.movie.imageUrl}
+                          alt={item.movie.title}
+                          className="w-16 h-16 object-cover rounded mr-4"
+                        />
+                      )}
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          {item.movie.title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Quantity: {item.quantity}
                         </p>
-                        <p>{order.shippingAddress.country}</p>
                       </div>
                     </div>
-
-                    <div>
-                      <h3 className="font-semibold mb-2 flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" />
-                        Payment Summary
-                      </h3>
-                      <div className="text-sm text-gray-600 space-y-1 bg-gray-50 p-3 rounded">
-                        <div className="flex justify-between">
-                          <span>Subtotal:</span>
-                          <span>${orderTotal.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Shipping:</span>
-                          <span>
-                            {shipping === 0
-                              ? "FREE"
-                              : `$${shipping.toFixed(2)}`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Tax:</span>
-                          <span>${tax.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between font-semibold pt-1 border-t">
-                          <span>Total:</span>
-                          <span>${total.toFixed(2)}</span>
-                        </div>
-                      </div>
+                    <div className="text-right">
+                      <p className="font-medium">
+                        ${Number(item.priceAtPurchase).toFixed(2)} each
+                      </p>
+                      <p className="font-bold">
+                        $
+                        {(Number(item.priceAtPurchase) * item.quantity).toFixed(
+                          2
+                        )}
+                      </p>
                     </div>
-
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                    >
-                      <Link href={`/checkout?order=${order.id}`}>
-                        View Order Details
-                      </Link>
-                    </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 text-center">
-        <p className="text-gray-600">
-          Showing {orders.length} most recent orders
-        </p>
-        <p className="text-sm text-gray-500 mt-2">
-          Orders are stored in your account and can be viewed anytime.
-        </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
