@@ -21,16 +21,18 @@ export default function MovieCard({ movie }: { movie: getMovieType }) {
     });
   };
 
+  console.log(`image: ${movie.imageUrl}`);
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
-      {/* CLICKABLE MOVIE AREA */}
-      <Link href={`/movies/${movie.id}`} className="block">
-        <div className="relative h-64 w-full bg-gray-100">
+    <div className="flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
+      {/* CLICKABLE IMAGE / DETAILS */}
+      <Link href={`/movies/${movie.id}`}>
+        <div className="relative bg-gray-200">
           {movie.imageUrl ? (
             <Image
               src={movie.imageUrl}
               alt={movie.title}
-              fill
+              width={300}
+              height={500}
               className="object-cover"
             />
           ) : (

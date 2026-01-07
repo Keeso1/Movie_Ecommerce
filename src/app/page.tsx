@@ -12,104 +12,30 @@ export default async function Home(props: PageProps<"/">) {
   const search = Array.isArray(searchParams.search)
     ? searchParams.search[0]
     : searchParams.search;
+  const sort = Array.isArray(searchParams.sort)
+    ? searchParams.sort[0]
+    : searchParams.sort;
+  if (sort) {
+    console.log(sort[0]);
+  }
 
   const genres = await getGenres();
-
-  const recentMovies = await getMovies("recent", genre, search);
-  const popularMovies = await getMovies("popularity", genre, search);
-  const oldestMovies = await getMovies("oldest", genre, search);
-  const cheapestMovies = await getMovies("price", genre, search);
+  const movies = await getMovies(sort, genre, search);
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      <aside className="sticky top-0 h-screen max-w-[20svw] overflow-y-auto">
-        <MovieFilter genres={genres} values={{ genre, search }} />
-      </aside>
-
-      <main className="flex flex-col grow text-justify-center gap-10 px-6 py-8">
-        <header>
-          <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-zinc-50 justify-items-center">
-            Welcome to the Movie Shop
-          </h1>
-          <p className="mt-2 text-orange-400 dark:text-white-800 text shadow-cyan-300 align text-center max-w-xl">
-            Browse our movie catalog for the latest releases, popular titles,
-            and great deals.
-          </p>
-        </header>
-
-        <section>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Recent Movies</h2>
-              <p className="text-sm text-zinc-500">
-                Sorted by release date (newest first)
-              </p>
-            </div>
-            <Link
-              href="/movies?sort=recent"
-              className="text-sm font-medium text-blue-400 hover:underline"
-            >
-              View all
-            </Link>
-          </div>
-
-          <MovieCardContainer movies={recentMovies.slice(0, 5)} />
-        </section>
-
-        <section>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Popular Movies</h2>
-              <p className="text-sm text-zinc-500">
-                Based on a derived popularity score using release date and price
-              </p>
-            </div>
-            <Link
-              href="/movies?sort=popularity"
-              className="text-sm font-medium text-blue-400 hover:underline"
-            >
-              View all
-            </Link>
-          </div>
-
-          <MovieCardContainer movies={popularMovies.slice(0, 5)} />
-        </section>
-
-        <section>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Oldest Movies</h2>
-              <p className="text-sm text-zinc-500">
-                Sorted by release date (oldest first)
-              </p>
-            </div>
-            <Link
-              href="/movies?sort=oldest"
-              className="text-sm font-medium text-blue-600 hover:underline"
-            >
-              View all
-            </Link>
-          </div>
-
-          <MovieCardContainer movies={oldestMovies.slice(0, 5)} />
-        </section>
-
-        <section>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Cheapest Movies</h2>
-              <p className="text-sm text-zinc-500">Sorted by lowest price</p>
-            </div>
-            <Link
-              href="/movies?sort=recent"
-              className="text-sm font-medium text-blue-600 hover:underline"
-            >
-              View all
-            </Link>
-          </div>
-          <MovieCardContainer movies={cheapestMovies.slice(0, 5)} />
-        </section>
-      </main>
+    <div className="flex flex-col md:flex-row min-h-screen bg-zinc-50 font-sans dark:bg-black">
+      <div className="w-full justify-items-start p-4 shrink-0 md:w-[20svw] md:h-screen md:sticky md:top-0 md:self-start md:overflow-y-auto">
+        <MovieFilter
+          genres={genres}
+          values={{ sort: sort, genre: genre, search: search }}
+        ></MovieFilter>
+      </div>
+      <div className="flex flex-col grow items-center gap-6 text-center sm:items-start sm:text-left">
+        <h1 className="max-w-s text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          Available Movies:
+        </h1>
+        <MovieCardContainer movies={movies}></MovieCardContainer>
+      </div>
     </div>
   );
 }
