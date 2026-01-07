@@ -20,7 +20,6 @@ import { createOrUpdateMovie } from "@/actions/create-movie-actions";
 import { ControllerRenderProps } from "react-hook-form";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-import { fetchMoviePerson, fetchGenres } from "@/app/admin/create-movie/page";
 import { getMovieType } from "@/actions/movie-actions";
 import { useEffect } from "react";
 
@@ -40,13 +39,21 @@ const schema = z.object({
 
 export type createMovieFormData = z.infer<typeof schema>;
 
-export default function UpdateMovieForm({ movie }: { movie: getMovieType }) {
+export default function UpdateMovieForm({
+  movie,
+  actors,
+  directors,
+  genres,
+  movieId,
+}: {
+  movie: getMovieType;
+  actors: Promise<Option[]>;
+  directors: Promise<Option[]>;
+  genres: Promise<Option[]>;
+  movieId: string;
+}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
-  const actors = fetchMoviePerson("actor");
-  const directors = fetchMoviePerson("director");
-  const genres = fetchGenres();
 
   const form = useForm<createMovieFormData>({
     resolver: zodResolver(schema),
@@ -130,7 +137,7 @@ export default function UpdateMovieForm({ movie }: { movie: getMovieType }) {
     console.log(data.actors);
     console.log(data.directors);
     try {
-      const result = await createOrUpdateMovie(data);
+      const result = await createOrUpdateMovie(data, movieId);
       if (!result) {
         toast("Error", {
           description: "Failed to create movie",
@@ -291,7 +298,7 @@ export default function UpdateMovieForm({ movie }: { movie: getMovieType }) {
         </Suspense>
 
         <Button type="submit" disabled={isLoading}>
-          Create Movie
+          Update Movie
         </Button>
       </form>
     </FormProvider>

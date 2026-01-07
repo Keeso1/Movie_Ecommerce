@@ -28,10 +28,14 @@ export function Combobox({
   options,
   value,
   onValueChangeAction,
+  placeholder,
+  name,
 }: {
   options: ComboBoxOptions;
   value: string | undefined;
   onValueChangeAction: (value: string | undefined) => void;
+  placeholder: string | undefined;
+  name: string;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -46,13 +50,13 @@ export function Combobox({
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : "Select option..."}
+            : `${name}`}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search genre..." />
+          <CommandInput placeholder={placeholder} />
           <CommandList>
             <CommandEmpty>No option found.</CommandEmpty>
             <CommandGroup>

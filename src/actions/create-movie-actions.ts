@@ -50,27 +50,18 @@ async function resolveCreatableOptions(
   return existingOptions;
 }
 
-export async function createOrUpdateMovie(data: createMovieFormData) {
-  //Debugging mode to not flood the database with test movies
-  const movieid = await prisma.movie.findFirst({
-    where: {
-      title: data.title,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  if (movieid !== null) {
-    await prisma.movie.delete({
-      where: {
-        id: movieid.id,
-      },
-    });
-  }
-
+export async function createOrUpdateMovie(
+  data: createMovieFormData,
+  id?: string,
+) {
   // Get an image based on the title
+  let posterImage;
   const posterURL = await getPosterUrl(data.title);
+  if (posterURL) {
+    posterImage = posterURL;
+  } else {
+    posterImage = "/missing-image1.png";
+  }
 
   const finalGenres = await resolveCreatableOptions(data.genres, "genre");
   const finalActors = await resolveCreatableOptions(
@@ -84,29 +75,60 @@ export async function createOrUpdateMovie(data: createMovieFormData) {
     "director",
   );
 
-  const movie = await prisma.movie.create({
-    data: {
-      title: data.title,
-      description: data.description,
-      price: data.price,
-      imageUrl: posterURL,
-      releaseDate: new Date(data.releaseDate),
-      runtime: data.runtime,
-      stock: data.stock,
-      genres: {
-        connect: finalGenres.map((item) => ({ id: item.value })),
+  let movie;
+
+  if (id) {
+    movie = await prisma.movie.update({
+      where: {
+        id: id,
       },
-      moviePersons: {
-        connect: [
-          ...finalDirectors.map((item) => ({
-            id: item.value,
-            role: "director",
-          })),
-          ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
-        ],
+      data: {
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        imageUrl: posterImage,
+        releaseDate: new Date(data.releaseDate),
+        runtime: data.runtime,
+        stock: data.stock,
+        genres: {
+          connect: finalGenres.map((item) => ({ id: item.value })),
+        },
+        moviePersons: {
+          connect: [
+            ...finalDirectors.map((item) => ({
+              id: item.value,
+              role: "director",
+            })),
+            ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
+          ],
+        },
       },
-    },
-  });
+    });
+  } else {
+    movie = await prisma.movie.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        imageUrl: posterImage,
+        releaseDate: new Date(data.releaseDate),
+        runtime: data.runtime,
+        stock: data.stock,
+        genres: {
+          connect: finalGenres.map((item) => ({ id: item.value })),
+        },
+        moviePersons: {
+          connect: [
+            ...finalDirectors.map((item) => ({
+              id: item.value,
+              role: "director",
+            })),
+            ...finalActors.map((item) => ({ id: item.value, role: "actor" })),
+          ],
+        },
+      },
+    });
+  }
 
   console.log(movie);
   return movie;
