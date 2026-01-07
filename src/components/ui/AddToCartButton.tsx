@@ -1,5 +1,4 @@
-
-'use client'; // This component should be client-side
+"use client"; // This component should be client-side
 
 import { useCart } from "@/context/CartContext"; // Use the CartContext to add items to the cart
 
@@ -17,10 +16,10 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ movie }) => {
 
   const handleAddToCart = () => {
     addToCart({
-      id: movie.id,
+      movieId: movie.id,
       title: movie.title,
       price: movie.price,
-      quantity: 1, 
+      quantity: 1,
       imageUrl: movie.imageUrl ?? "", // Default to empty string if no image URL
     });
   };

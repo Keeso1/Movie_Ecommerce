@@ -1,63 +1,65 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { getMovieType } from "@/actions/movie-actions";
 import { useCart } from "@/context/CartContext";
 
 export default function MovieCard({ movie }: { movie: getMovieType }) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     addToCart({
-      id: movie.id,
+      movieId: movie.id,
       title: movie.title,
-      price: movie.price ?? 0, // Ensure price defaults to 0 if missing
+      price: movie.price ?? 0,
       quantity: 1,
-      imageUrl: movie.imageUrl ?? "", // Default to empty string if no image
+      imageUrl: movie.imageUrl ?? "",
     });
   };
 
   return (
     <div className="flex flex-col bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
-      {/* CLICKABLE IMAGE / DETAILS */}
-      <Link href={`/movies/${movie.id}`}>
-        <div className="relative bg-gray-200">
+      {/* CLICKABLE MOVIE AREA */}
+      <Link href={`/movies/${movie.id}`} className="block">
+        <div className="relative h-64 w-full bg-gray-100">
           {movie.imageUrl ? (
             <Image
               src={movie.imageUrl}
               alt={movie.title}
-              width={300}
-              height={500}
+              fill
               className="object-cover"
             />
           ) : (
-            <div className="h-[500px] flex items-center justify-center bg-gray-100 text-gray-500">
-              No Image Available
+            <div className="flex h-full items-center justify-center text-gray-400">
+              No image
             </div>
           )}
         </div>
 
         <div className="p-4">
-          {movie.runtime !== null && <span>{movie.runtime} min</span>}
-          {movie.releaseDate && (
-            <span>{new Date(movie.releaseDate).getFullYear()}</span>
-          )}
           <h3 className="text-lg font-semibold truncate">{movie.title}</h3>
-          <p>{movie.genres.map((genre) => genre.name).join(" • ")}</p>
+
+          <p className="text-gray-500 text-sm">
+            {movie.genres?.map((g) => g.name).join(" • ")}
+          </p>
+
           {movie.price !== null && (
-            <div className="flex flex-row justify-between mt-4 text-green-600 font-semibold">
-              <p>${movie.price.toFixed(2)}</p>
+            <div className="flex justify-between mt-3 text-green-600 font-semibold text-sm">
+              <p>SEK {movie.price.toFixed(0)}</p>
               <p>{movie.stock} in stock</p>
             </div>
           )}
         </div>
       </Link>
 
-      {/* ADD TO CART BUTTON (NOT A LINK) */}
+      {/* ACTION AREA */}
       <button
         onClick={handleAddToCart}
-        className="m-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        className="m-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
       >
         Add to Cart
       </button>

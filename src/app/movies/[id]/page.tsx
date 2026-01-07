@@ -21,10 +21,10 @@ export default async function MoviePage(props: { params: { id: string } }) {
   }
 
   const directors = movie.moviePersons.filter(
-    (person) => person.role.toLowerCase() === "director",
+    (person) => person.role.toLowerCase() === "director"
   );
   const actors = movie.moviePersons.filter(
-    (person) => person.role.toLowerCase() === "actor",
+    (person) => person.role.toLowerCase() === "actor"
   );
 
   return (
@@ -100,8 +100,14 @@ export default async function MoviePage(props: { params: { id: string } }) {
                 ${movie.price.toFixed(2)}
               </span>
 
-              {/* Add to Cart Button */}
-              <AddToCartButton movie={movie} />
+              <AddToCartButton
+                movie={{
+                  id: movie.id,
+                  title: movie.title,
+                  price: movie.price,
+                  imageUrl: movie.imageUrl ?? "",
+                }}
+              />
             </div>
 
             {session?.user.role === "admin" ? (

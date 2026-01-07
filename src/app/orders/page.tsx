@@ -1,6 +1,5 @@
 import { authClient } from "@/lib/auth-client";
-import { cookies } from "next/headers";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,11 +20,18 @@ import {
 import Link from "next/link";
 import { format } from "date-fns";
 
+type OrderItemWithMovie = {
+  id: string;
+  quantity: number;
+  priceAtPurchase: number | string;
+  movie: {
+    title: string;
+    // Add other movie fields if needed
+  };
+};
+
 export default async function OrdersPage() {
-  const cookieStore = await cookies();
-  const session = await authClient.api.getSession({
-    headers: { cookie: cookieStore.toString() },
-  });
+  const session = await authClient.getSession();
 
   if (!session?.data?.user) {
     return (
@@ -100,7 +106,9 @@ export default async function OrdersPage() {
       <div className="container mx-auto px-4 py-16 text-center">
         <Package className="h-24 w-24 mx-auto text-gray-300 mb-6" />
         <h1 className="text-3xl font-bold text-gray-900 mb-4">No Orders Yet</h1>
-        <p className="text-gray-600 mb-8">You haven't placed any orders yet.</p>
+        <p className="text-gray-600 mb-8">
+          You have not placed any orders yet.
+        </p>
         <Button asChild size="lg">
           <Link href="/">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -181,7 +189,7 @@ export default async function OrdersPage() {
                   <div className="md:col-span-2">
                     <h3 className="font-semibold mb-3">Items</h3>
                     <div className="space-y-3">
-                      {order.items.map((item) => (
+                      {order.items.map((item: OrderItemWithMovie) => (
                         <div
                           key={item.id}
                           className="flex items-center gap-3 p-3 bg-gray-50 rounded"

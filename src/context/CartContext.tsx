@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export interface CartItem {
-  id: string;
+  movieId: string;
   title: string;
   price: number;
   quantity: number;
@@ -14,99 +14,83 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string) => void;
-  increaseQuantity: (id: string) => void;
-  decreaseQuantity: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeFromCart: (movieId: string) => void;
+  increaseQuantity: (movieId: string) => void;
+  decreaseQuantity: (movieId: string) => void;
+  updateQuantity: (movieId: string, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-const CART_COOKIE_KEY = 'cart';
+const CART_COOKIE_KEY = "cart";
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  /* Load cart from cookies */
-  useEffect(() => {
+export function CartProvider({ children }: React.PropsWithChildren<object>) {
+  const [cart, setCart] = useState<CartItem[]>(() => {
     const storedCart = Cookies.get(CART_COOKIE_KEY);
-    if (storedCart) {
+    if (storedCart && storedCart !== "undefined" && storedCart !== "") {
       try {
-        setCart(JSON.parse(storedCart));
+        return JSON.parse(storedCart);
       } catch {
-        Cookies.remove(CART_COOKIE_KEY);
+        return [];
       }
     }
-  }, []);
+    return [];
+  });
 
-  /* Save cart to cookies */
   useEffect(() => {
-    Cookies.set(CART_COOKIE_KEY, JSON.stringify(cart), {
-      expires: 7,
-      sameSite: 'lax',
-    });
+    Cookies.set("cart", JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      const existing = prev.find((i) => i.movieId === item.movieId);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id
-            ? { ...i, quantity: i.quantity + 1 }
+          i.movieId === item.movieId
+            ? { ...i, quantity: i.quantity + item.quantity }
             : i
         );
       }
-      return [...prev, item];
+      return [...prev, { ...item }];
     });
   };
 
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (movieId: string) => {
+    setCart((prev) => prev.filter((item) => item.movieId !== movieId));
   };
 
-  const increaseQuantity = (id: string) => {
+  const increaseQuantity = (movieId: string) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id
+        item.movieId === movieId
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
   };
 
-  const decreaseQuantity = (id: string) => {
+  const decreaseQuantity = (movieId: string) => {
     setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
+      prev.map((item) =>
+        item.movieId === movieId && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
     );
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(id);
-      return;
-    }
-
+  const updateQuantity = (movieId: string, quantity: number) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity }
-          : item
+        item.movieId === movieId ? { ...item, quantity } : item
       )
     );
   };
 
   const clearCart = () => {
     setCart([]);
-    Cookies.remove(CART_COOKIE_KEY);
   };
 
   const getTotalItems = () =>
@@ -137,7 +121,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within CartProvider');
+    throw new Error("useCart must be used within CartProvider");
   }
   return context;
 }

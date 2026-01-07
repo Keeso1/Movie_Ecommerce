@@ -1,21 +1,14 @@
-'use client';
+import Image from "next/image";
+import Link from "next/link";
+import { getCartFromCookies } from "@/lib/cart/cart.cookies";
+import { resolveCart } from "@/lib/cart/cart.service";
+import { removeFromCart, updateCartQuantity } from "@/lib/cart/cart.actions";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
+export default async function CartPage() {
+  const cart = await getCartFromCookies();
+  const resolvedCart = await resolveCart(cart);
 
-export default function CartPage() {
-  const {
-    cart,
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-    updateQuantity,
-    getTotalPrice,
-    clearCart,
-  } = useCart();
-
-  if (cart.length === 0) {
+  if (resolvedCart.items.length === 0) {
     return (
       <div className="p-8 text-center">
         <h1 className="text-2xl mb-4">Your cart is empty</h1>
@@ -27,13 +20,13 @@ export default function CartPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
 
-      {cart.map((item) => (
+      {resolvedCart.items.map((item) => (
         <div
-          key={item.id}
-          className="flex flex-col sm:flex-row justify-between gap-4 border-b py-4"
+          key={item.movieId}
+          className="flex justify-between gap-4 border-b py-4"
         >
           <div className="flex gap-4">
             <Image
@@ -46,67 +39,37 @@ export default function CartPage() {
             <div>
               <h2 className="font-semibold">{item.title}</h2>
               <p className="text-gray-600">${item.price.toFixed(2)}</p>
-              <button
-                onClick={() => removeFromCart(item.id)}
-                className="text-red-500 text-sm mt-2"
-              >
-                Remove
-              </button>
+
+              {/* REMOVE */}
+
+              <form action={removeFromCart}>
+                <input type="hidden" name="movieId" value={item.movieId} />
+                <button className="text-red-500 text-sm mt-2">Remove</button>
+              </form>
             </div>
           </div>
 
-          {/* Quantity controls */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => decreaseQuantity(item.id)}
-              className="px-3 py-1 border rounded"
-            >
-              −
-            </button>
+          {/* QUANTITY UPDATE */}
 
+          <form action={updateCartQuantity} className="flex items-center gap-3">
+            <input type="hidden" name="movieId" value={item.movieId} />
             <input
               type="number"
+              name="quantity"
               min={1}
-              value={item.quantity}
-              onChange={(e) =>
-                updateQuantity(item.id, Number(e.target.value))
-              }
+              max={10}
+              defaultValue={item.quantity}
               className="w-16 text-center border rounded"
+              title="Quantity"
             />
-
-            <button
-              onClick={() => increaseQuantity(item.id)}
-              className="px-3 py-1 border rounded"
-            >
-              +
-            </button>
-          </div>
+            <button className="px-3 py-1 border rounded">Update</button>
+          </form>
 
           <div className="font-semibold">
             ${(item.price * item.quantity).toFixed(2)}
           </div>
         </div>
       ))}
-
-      <div className="mt-8 flex justify-between items-center">
-        <button
-          onClick={clearCart}
-          className="text-red-600 underline"
-        >
-          Clear cart
-        </button>
-
-        <div className="text-right">
-          <p className="text-xl font-bold">
-            Total: ${getTotalPrice().toFixed(2)}
-          </p>
-          <Link href="/checkout">
-          <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded">
-            Checkout
-          </button>
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }
